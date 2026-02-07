@@ -6,7 +6,9 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "biome lint .",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@tanstack/react-devtools": "^0.7.0",

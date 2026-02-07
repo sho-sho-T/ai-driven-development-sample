@@ -8,6 +8,14 @@ gh = "latest"
 description = "Start TanStack Start dev server"
 run = "cd apps/web && bun run dev"
 
+[tasks.lint]
+description = "Run lint checks with Biome"
+run = "bun run lint"
+
+[tasks.format]
+description = "Format code with Biome"
+run = "bun run format"
+
 [tasks.db]
 description = "Start Supabase services"
 run = "supabase start"

@@ -34,18 +34,18 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
+        "biomejs.biome",
         "bradlc.vscode-tailwindcss",
         "formulahendry.auto-rename-tag",
         "ms-azuretools.vscode-docker",
         "bungcip.better-toml"
       ],
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFormatter": "biomejs.biome",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "explicit"
+          "source.fixAll.biome": "explicit",
+          "source.organizeImports.biome": "explicit"
         },
         "files.watcherExclude": {
           "**/node_modules/**": true,

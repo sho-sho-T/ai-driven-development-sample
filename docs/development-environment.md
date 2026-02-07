@@ -126,6 +126,8 @@ DinD ではコンテナが DevContainer 内の Docker デーモン上に起動�
 | コマンド | 説明 |
 |---------|------|
 | `mise run dev` (`mr dev`) | TanStack Start 開発サーバー起動 (localhost:3000) |
+| `mise run lint` | Biome で lint 実行 |
+| `mise run format` | Biome で format 実行 |
 | `mise run db` (`mr db`) | Supabase サービス起動 |
 | `mise run db:stop` | Supabase サービス停止 |
 | `mise run db:reset` | DB リセット（マイグレーション再適用） |
@@ -134,8 +136,7 @@ DinD ではコンテナが DevContainer 内の Docker デーモン上に起動�
 
 | 拡張 | 用途 |
 |------|------|
-| ESLint | Lint |
-| Prettier | コードフォーマッタ |
+| Biome | Lint / コードフォーマッタ |
 | Tailwind CSS IntelliSense | Tailwind 補完 |
 | Auto Rename Tag | HTML/JSX タグ自動リネーム |
 | Docker | Docker ファイルサポート |
