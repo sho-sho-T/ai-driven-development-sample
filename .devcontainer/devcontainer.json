@@ -14,11 +14,7 @@
     "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume",
     "source=${localWorkspaceFolderBasename}-gh-config,target=/home/vscode/.config/gh,type=volume"
   ],
-  "forwardPorts": [
-    3000,
-    54321,
-    54323
-  ],
+  "forwardPorts": [3000, 54321, 54323],
   "portsAttributes": {
     "3000": {
       "label": "TanStack Start",
@@ -42,7 +38,8 @@
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
         "formulahendry.auto-rename-tag",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "bungcip.better-toml"
       ],
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
