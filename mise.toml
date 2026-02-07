@@ -1,0 +1,21 @@
+[tools]
+bun = "latest"
+node = "22"
+"aqua:supabase/cli" = "latest"
+gh = "latest"
+
+[tasks.dev]
+description = "Start TanStack Start dev server"
+run = "cd apps/web && bun run dev"
+
+[tasks.db]
+description = "Start Supabase services"
+run = "supabase start"
+
+[tasks."db:stop"]
+description = "Stop Supabase services"
+run = "supabase stop"
+
+[tasks."db:reset"]
+description = "Reset database (re-apply migrations)"
+run = "supabase db reset"

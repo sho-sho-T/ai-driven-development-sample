@@ -1,0 +1,11 @@
+{
+  "name": "ai-driven-development-sample",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "nitro": "npm:nitro-nightly@latest"
+  }
+}

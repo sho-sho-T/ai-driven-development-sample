@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+.mise.local.toml
+*.local.sh
+.DS_Store
+.claude/settings.local.json
