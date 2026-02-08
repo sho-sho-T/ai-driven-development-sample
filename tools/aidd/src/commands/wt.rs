@@ -3,7 +3,8 @@ use std::fs;
 use anyhow::{Context, Result};
 
 use crate::helpers::{
-    branch_name, info, repo_root, run_command, run_command_in, warn, worktree_path,
+    branch_name, info, repo_root, run_command, run_command_in, run_command_inherit, supabase_ports,
+    supabase_project_id, warn, worktree_path,
 };
 
 /// Create a worktree for the given issue/task pair (idempotent).
@@ -68,10 +69,78 @@ pub fn ensure(issue: u32, task: u32) -> Result<()> {
 
     // Copy .env if it exists
     let env_src = root.join(".env");
+    let env_dst = wt_path.join(".env");
     if env_src.exists() {
-        let env_dst = wt_path.join(".env");
         fs::copy(&env_src, &env_dst).context("Failed to copy .env")?;
         info("Copied .env from root");
+    }
+
+    // Patch supabase/config.toml for isolated Supabase instance
+    let config_path = wt_path.join("supabase/config.toml");
+    if config_path.exists() {
+        info("Patching supabase/config.toml for isolated instance...");
+        let ports = supabase_ports(issue, task);
+        let project_id = supabase_project_id(issue, task);
+
+        let config = fs::read_to_string(&config_path)
+            .context("Failed to read supabase/config.toml")?;
+
+        let config = config
+            .replace(
+                "project_id = \"ai-driven-development-sample\"",
+                &format!("project_id = \"{project_id}\""),
+            )
+            .replace("port = 54321", &format!("port = {}", ports.api))
+            .replace("port = 54322", &format!("port = {}", ports.db))
+            .replace("shadow_port = 54320", &format!("shadow_port = {}", ports.shadow))
+            .replace("port = 54323", &format!("port = {}", ports.studio))
+            .replace("port = 54324", &format!("port = {}", ports.inbucket))
+            .replace("port = 54327", &format!("port = {}", ports.analytics))
+            .replace("port = 54329", &format!("port = {}", ports.pooler))
+            .replace("inspector_port = 8083", &format!("inspector_port = {}", ports.inspector));
+
+        fs::write(&config_path, config)
+            .context("Failed to write patched supabase/config.toml")?;
+
+        // Start Supabase
+        info("Starting Supabase...");
+        run_command_inherit("supabase", &["start"], Some(&wt_path))
+            .context("Failed to start Supabase")?;
+
+        // Reset DB (runs migrations + seeds)
+        info("Resetting Supabase database (migrations + seed)...");
+        run_command_inherit("supabase", &["db", "reset"], Some(&wt_path))
+            .context("Failed to reset Supabase database")?;
+
+        // Extract anon key from supabase status
+        info("Extracting Supabase anon key...");
+        let status_output = run_command_in("supabase", &["status", "-o", "env"], Some(&wt_path))
+            .unwrap_or_default();
+
+        let anon_key = status_output
+            .lines()
+            .find(|line| line.starts_with("ANON_KEY=") || line.starts_with("anon_key="))
+            .and_then(|line| line.split_once('='))
+            .map(|(_, v)| v.trim_matches('"').to_string())
+            .unwrap_or_default();
+
+        // Append Supabase connection info to .env
+        let env_append = format!(
+            "\n# Supabase (worktree-local instance)\nSUPABASE_URL=http://127.0.0.1:{}\nSUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:{}/postgres\nSUPABASE_ANON_KEY={}\n",
+            ports.api, ports.db, anon_key,
+        );
+
+        use std::io::Write;
+        let mut env_file = fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&env_dst)
+            .context("Failed to open .env for appending")?;
+        env_file
+            .write_all(env_append.as_bytes())
+            .context("Failed to append Supabase config to .env")?;
+
+        info("Supabase instance ready");
     }
 
     info(&format!("Worktree ready: {}", wt_path.display()));
@@ -86,6 +155,15 @@ pub fn remove(issue: u32, task: u32) -> Result<()> {
     let root = repo_root();
 
     if wt_path.exists() {
+        // Stop Supabase if config exists
+        let config_path = wt_path.join("supabase/config.toml");
+        if config_path.exists() {
+            info("Stopping Supabase...");
+            if let Err(e) = run_command_in("supabase", &["stop"], Some(&wt_path)) {
+                warn(&format!("Failed to stop Supabase: {e}"));
+            }
+        }
+
         info(&format!("Removing worktree: {}", wt_path.display()));
         run_command("git", &[
             "-C",

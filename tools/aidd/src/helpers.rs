@@ -122,6 +122,41 @@ pub fn warn(msg: &str) {
     eprintln!("WARN: {msg}");
 }
 
+/// Port configuration for a per-worktree Supabase instance.
+pub struct SupabasePorts {
+    pub api: u32,
+    pub db: u32,
+    pub shadow: u32,
+    pub studio: u32,
+    pub inbucket: u32,
+    pub analytics: u32,
+    pub pooler: u32,
+    pub inspector: u32,
+}
+
+/// Calculate Supabase ports for a given issue/task pair.
+///
+/// Each worktree gets a unique offset (`issue * 100 + task * 10`) applied
+/// to the default Supabase ports so that multiple instances can run in parallel.
+pub fn supabase_ports(issue: u32, task: u32) -> SupabasePorts {
+    let offset = issue * 100 + task * 10;
+    SupabasePorts {
+        api: 54321 + offset,
+        db: 54322 + offset,
+        shadow: 54320 + offset,
+        studio: 54323 + offset,
+        inbucket: 54324 + offset,
+        analytics: 54327 + offset,
+        pooler: 54329 + offset,
+        inspector: 8083 + offset,
+    }
+}
+
+/// Generate the Supabase project_id for a given issue/task pair.
+pub fn supabase_project_id(issue: u32, task: u32) -> String {
+    format!("ai-driven-development-sample-i{issue}-t{task}")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -160,5 +195,45 @@ mod tests {
     fn test_task_dir_path() {
         let path = task_dir(1, 2);
         assert!(path.ends_with("features/1/2"));
+    }
+
+    #[test]
+    fn test_supabase_ports_issue1_task1() {
+        let ports = supabase_ports(1, 1);
+        // offset = 1*100 + 1*10 = 110
+        assert_eq!(ports.api, 54431);
+        assert_eq!(ports.db, 54432);
+        assert_eq!(ports.shadow, 54430);
+        assert_eq!(ports.studio, 54433);
+        assert_eq!(ports.inbucket, 54434);
+        assert_eq!(ports.analytics, 54437);
+        assert_eq!(ports.pooler, 54439);
+        assert_eq!(ports.inspector, 8193);
+    }
+
+    #[test]
+    fn test_supabase_ports_issue2_task3() {
+        let ports = supabase_ports(2, 3);
+        // offset = 2*100 + 3*10 = 230
+        assert_eq!(ports.api, 54551);
+        assert_eq!(ports.db, 54552);
+        assert_eq!(ports.shadow, 54550);
+        assert_eq!(ports.studio, 54553);
+        assert_eq!(ports.inbucket, 54554);
+        assert_eq!(ports.analytics, 54557);
+        assert_eq!(ports.pooler, 54559);
+        assert_eq!(ports.inspector, 8313);
+    }
+
+    #[test]
+    fn test_supabase_project_id() {
+        assert_eq!(
+            supabase_project_id(1, 1),
+            "ai-driven-development-sample-i1-t1"
+        );
+        assert_eq!(
+            supabase_project_id(42, 7),
+            "ai-driven-development-sample-i42-t7"
+        );
     }
 }
