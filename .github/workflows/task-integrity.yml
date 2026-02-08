@@ -1,0 +1,44 @@
+name: Task Integrity
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract issue/task from PR title
+        id: extract
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          if [[ "$TITLE" =~ ^\[TASK-([0-9]+)-([0-9]+)\] ]]; then
+            echo "issue=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+            echo "task=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::PR title does not match [TASK-N-N] format"
+            exit 0
+          fi
+
+      - name: Verify TASK.md exists
+        if: steps.extract.outputs.issue
+        run: |
+          ISSUE=${{ steps.extract.outputs.issue }}
+          TASK=${{ steps.extract.outputs.task }}
+          TASK_FILE="features/${ISSUE}/${TASK}/TASK.md"
+          if [ ! -f "$TASK_FILE" ]; then
+            echo "::error::${TASK_FILE} が存在しません"
+            exit 1
+          fi
+
+      - name: Verify TASK.md status is done
+        if: steps.extract.outputs.issue
+        run: |
+          ISSUE=${{ steps.extract.outputs.issue }}
+          TASK=${{ steps.extract.outputs.task }}
+          TASK_FILE="features/${ISSUE}/${TASK}/TASK.md"
+          if ! grep -q 'status: done' "$TASK_FILE"; then
+            echo "::error::${TASK_FILE} の status が done ではありません"
+            exit 1
+          fi

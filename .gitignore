@@ -8,3 +8,4 @@ supabase/.temp/
 *.local.sh
 .DS_Store
 .claude/settings.local.json
+.worktrees/

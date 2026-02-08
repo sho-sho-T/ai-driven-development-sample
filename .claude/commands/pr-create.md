@@ -1,0 +1,33 @@
+# pr-create コマンド
+
+## Usage
+
+`/pr-create <issue-number> <task-number>`
+
+## Flow
+
+### 1. ブランチを push
+
+```bash
+git push -u origin feat/issue-<issue>-task-<task>
+```
+
+### 2. PR を作成
+
+```bash
+gh pr create \
+  --title "[TASK-<issue>-<task>] <summary>" \
+  --body "## Summary
+...
+
+## Related Issue
+Closes #<issue>
+
+## Verification
+- [x] mise run lint
+- [x] bun test"
+```
+
+### 3. PR URL を出力
+
+作成した PR の URL を表示する。
