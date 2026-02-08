@@ -45,7 +45,16 @@ else
 fi
 
 # ---------------------------------------------------
-# 5. Configure shell (bashrc)
+# 5. Install AI development tools
+# ---------------------------------------------------
+echo "--- Installing Claude Code ---"
+curl -fsSL https://claude.ai/install.sh | bash
+
+echo "--- Installing Codex ---"
+npm install -g @openai/codex
+
+# ---------------------------------------------------
+# 6. Configure shell (bashrc)
 # ---------------------------------------------------
 echo "--- Configuring shell ---"
 BASHRC="$HOME/.bashrc"
@@ -74,13 +83,13 @@ SHELL_CONFIG
 fi
 
 # ---------------------------------------------------
-# 6. Git safe.directory
+# 7. Git safe.directory
 # ---------------------------------------------------
 echo "--- Configuring git ---"
 git config --global --add safe.directory "${WORKSPACE}"
 
 # ---------------------------------------------------
-# 7. Run local customization script (if exists)
+# 8. Run local customization script (if exists)
 # ---------------------------------------------------
 if [ -f ".devcontainer/post-create.local.sh" ]; then
   echo "--- Running post-create.local.sh ---"
