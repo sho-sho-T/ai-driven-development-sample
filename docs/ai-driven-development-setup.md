@@ -1,182 +1,855 @@
-# AI駆動開発と開発体験向上の設定概要
+# AI駆動開発セットアップ手順書（Issue起点・自走運用）
 
-このドキュメントは、「AI駆動開発を実現する設定」と「開発体験（DX）を高める設定」を、他プロジェクトへ再適用できる粒度でまとめたものです。
+この手順書は、AI エージェントが **Issue 起点で計画→実装→PR** まで自走する開発環境を構築するための実装手順である。
+開発者は要件定義と最終レビューに集中し、コーディング作業は AI に委譲する。
 
-## 1. 目的と設計方針
+## 目次
 
-- AIエージェントに「読むべき文書」「守るべきルール」「実行フロー」を明示して、出力品質を安定させる。
-- 人間とAIが同じ手順（branch/worktree/test/PR）で作業し、レビュー容易性と再現性を確保する。
-- ローカル開発環境をコンテナ＋タスクランナー＋CLIで標準化し、オンボーディングコストを下げる。
-- 進捗管理（PLAN/TASK）をコード管理対象にし、運用ログをCIで自動検証する。
+1. [完成条件（Definition of Done）](#1-完成条件definition-of-done)
+2. [前提](#2-前提)
+3. [AI実行フロー全体像](#3-ai実行フロー全体像)
+4. [生成するディレクトリ構成](#4-生成するディレクトリ構成)
+5. [`.agent/` ディレクトリの役割](#5-agent-ディレクトリの役割)
+6. [`features/` ディレクトリの役割](#6-features-ディレクトリの役割)
+7. [セットアップ手順](#7-セットアップ手順)
+8. [独自CLI `aidd` の設計](#8-独自cli-aidd-の設計)
+9. [Worktree 自動化](#9-worktree-自動化)
+10. [CI による運用ルール強制](#10-ci-による運用ルール強制)
+11. [AI自走ランブック（運用時）](#11-ai自走ランブック運用時)
+12. [品質を維持するための設計原則](#12-品質を維持するための設計原則)
+13. [導入チェックリスト](#13-導入チェックリスト)
 
-## 2. AI駆動開発の中核設定
+---
 
-### 2.1 共通エントリポイント
+## 1. 完成条件（Definition of Done）
 
-- `AGENTS.md`
-  - プロジェクト説明、必読ドキュメント、利用可能スキルを定義。
-  - エージェント起動時に読むべき一次情報として機能。
-- `CLAUDE.md`
-  - Claude向けの最小プロジェクト情報。
+以下すべてを満たす状態を目標とする。
 
-### 2.2 ルールの集中管理（`.agent/rules`）
+1. この手順書の内容だけで環境を再現できる
+2. AI が `Issue取得 → Plan作成 → Task分解 → 実装 → 検証 → commit → PR作成` を自走できる
+3. `features/<issue-number>/PLAN.md` と `features/<issue-number>/<task-number>/TASK.md` が標準化されている
+4. Worktree の作成・切替・削除を AI エージェントが自律的に実行できる
+5. ルール違反をローカルと CI の両方で検知できる
+6. 開発者の介入ポイントは **Plan承認** と **PRレビュー・マージ** の2点のみ
 
-以下のような「守るべき規約」をMarkdown化してAIに強制する。
+---
 
-- ブランチ戦略: `feat/*`, `docs/*`, `chore/*`（`.agent/rules/branch-strategy.md`）
-- 作業ルール: worktree必須、完了時の lint/test/integration/e2e 実行（`.agent/rules/coding-work.md`）
-- コミット規約: Conventional Commits + AIタグ（`.agent/rules/commit.md`）
-- 設定変更時の承認制御（`.agent/rules/config-change-confirmation.md`）
-- ディレクトリ/パッケージ構造、TDD、Reactテスト方針（`.agent/rules/*.md`）
+## 2. 前提
 
-ポイント:
-- 「AIの判断に任せる」ではなく、判断基準をファイル化して毎回読ませる。
-- ルールはコードと同じリポジトリでバージョン管理する。
+| 項目 | 内容 |
+|------|------|
+| 開発環境 | DevContainer（Docker-in-Docker） |
+| ランタイム・ツール管理 | `mise.toml`（`bun`, `node`, `supabase`, `gh`） |
+| GitHub操作 | `gh` CLI |
+| AIエージェント | Claude Code または Codex |
+| モノレポ | Bun workspaces（`apps/*`, `packages/*`） |
+| リンター | Biome |
 
-### 2.3 AIコマンド化（`.agent/commands`）
+> 環境詳細は `docs/development-environment.md` を参照。
 
-プロンプトを定型化し、作業単位ごとに再利用する。
+---
 
-- 例: `/cc-plan`, `/cc-chore`, `/cc-docs`, `/task-run`, `/task-done`, `/pr`, `/done`
-- 例: Notion連携コマンド `/ticket-get`, `/ticket-create`
+## 3. AI実行フロー全体像
 
-効果:
-- 作業開始時に必要なブランチ名・worktree作成・PRテンプレート反映を自動化できる。
-- チーム内で「AIへの依頼手順」を統一できる。
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AI 実行フロー                                  │
+│                                                                 │
+│  ① Issue取得         gh issue view <N> --json ...               │
+│       ↓                                                         │
+│  ② Plan作成          features/<N>/PLAN.md を生成                  │
+│       ↓                                                         │
+│  ③ Task分解          features/<N>/<T>/TASK.md を生成              │
+│       ↓                                                         │
+│  ★ 開発者承認         Plan/Task の内容を人間が確認                    │
+│       ↓                                                         │
+│  ④ Worktree準備      aidd wt ensure <N> <T>                     │
+│       ↓                                                         │
+│  ⑤ 実装              TASK.md の手順に従いコード変更                   │
+│       ↓                                                         │
+│  ⑥ 検証              mise run lint && テスト実行                   │
+│       ↓                                                         │
+│  ⑦ commit            Conventional Commits 形式                   │
+│       ↓                                                         │
+│  ⑧ PR作成            gh pr create                                │
+│       ↓                                                         │
+│  ★ 開発者レビュー      PR をレビューしマージ                           │
+│       ↓                                                         │
+│  ⑨ 後処理             TASK/PLAN status更新, Worktree削除           │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-### 2.4 PLAN/TASKテンプレート運用（`.agent/templates` + `features/`）
+**人間の介入は ★ の2箇所のみ。**
 
-- テンプレート: `.agent/templates/PLAN.md`, `.agent/templates/TASK.md`
-- 実体: `features/{itemNo}/PLAN.md`, `features/{itemNo}/{taskNo}/TASK.md`
+---
 
-FrontMatterで `status`, `completedDate`, `codingAgent(s)`, `branchName` を管理し、AI作業の監査ログとして使う。
+## 4. 生成するディレクトリ構成
 
-### 2.5 エージェント別アダプタ設定
+以下を新規に追加する。既存の `apps/`, `packages/`, `supabase/` 等はそのまま維持する。
 
-- Claude Code
-  - `.claude/settings.local.json`: 許可コマンドを明示（Bash, notion MCP, git, gh など）
-  - `.claude/hooks/on-notification.sh`, `.claude/hooks/on-stop.sh`: `orc slack send` でSlack通知
-- Codex
-  - `.codex/config.toml` は機密情報を含むためGit管理しない（`README.md`, `.gitignore`）
-  - 通知例は `README.md` に記載
-- Cursor
-  - `.cursor/notify.sh`: 最終ユーザーメッセージ時刻を見て通知抑制しつつローカル通知
+```text
+.
+├── AGENTS.md                          # AI の入口（必読順序・グローバルルール）
+├── .agent/
+│   ├── commands/                      # AI が実行するワークフロー定義
+│   │   ├── issue-plan.md              # Issue → PLAN/TASK 生成フロー
+│   │   ├── task-run.md                # TASK 実行フロー
+│   │   ├── task-done.md               # 検証・commit・PR フロー
+│   │   └── pr-create.md              # PR 作成フロー
+│   ├── rules/                         # AI が遵守すべきルール（機械実行可能）
+│   │   ├── branch-strategy.md         # ブランチ命名・運用ルール
+│   │   ├── coding-work.md             # コーディング規約・禁止事項
+│   │   ├── commit.md                  # コミットメッセージ規約
+│   │   ├── testing.md                 # テスト実行ルール
+│   │   └── review-checklist.md        # PR 提出前チェックリスト
+│   └── templates/                     # PLAN/TASK のテンプレート
+│       ├── PLAN.md
+│       └── TASK.md
+├── features/                          # Issue 単位の計画・タスク管理
+│   └── <issue-number>/
+│       ├── PLAN.md
+│       └── <task-number>/
+│           └── TASK.md
+├── tools/aidd/                        # 独自 CLI（Worktree・Issue・Task・PR 統合）
+│   ├── src/
+│   │   └── main.rs                    # エントリポイント (Rust 推奨)
+│   └── Cargo.toml
+└── .github/workflows/
+    ├── pr-check.yml                   # lint/test 実行
+    └── task-integrity.yml             # TASK.md 整合性チェック
+```
 
-### 2.6 スキル運用
+---
 
-- 方針: `docs/guidelines/agent-skills.md`
-- 共通スキル配置: `.agent/skills`（プロジェクト用）
-- ローカル専用スキルは `.gitignore` で除外して管理可能（`.agent/skills/.system/`）
+## 5. `.agent/` ディレクトリの役割
 
-## 3. 並行開発（Worktree）を成立させる設定
+### 5.1 `commands/` — AI ワークフロー定義
 
-### 3.1 worktree運用CLI（`orc`）
+AI エージェントが特定の操作を実行する際の手順書。Claude Code では `/issue-plan 123` のようにスラッシュコマンドとして呼び出す。
 
-- ソース: `tools/orc`
-- 主機能:
-  - `orc wt add/ls/rm/cd`
-  - `orc features is-done-task/check-plan/done-task/done-plan/update`
-  - `orc doctor`, `orc slack send`
+| ファイル | 責務 | トリガー例 |
+|----------|------|-----------|
+| `issue-plan.md` | Issue取得→PLAN/TASK生成 | `/issue-plan 123` |
+| `task-run.md` | Worktree準備→実装開始 | `/task-run 123 1` |
+| `task-done.md` | 検証→commit→PR | `/task-done 123 1` |
+| `pr-create.md` | PR作成のみ | `/pr-create 123 1` |
 
-### 3.2 worktreeフック（`.orc.toml`）
+### 5.2 `rules/` — AIが遵守するルール
 
-`orc wt add` 時に以下を自動化。
+ルールは **曖昧な文章を禁止** し、機械実行可能な条件として記述する。
 
-- `.env` 複製
-- `mise trust` / 依存インストール（`ni`）
-- ブランチ名ベースでDB作成・DB名書き換え・migrate/seed
-- docsブランチではDB関連処理をスキップ（`exclude_branch = ["docs/**"]`）
-- VSCode window title, zellijタブ名の自動設定
+**良い例（実行可能）:**
+```
+- ブランチ名: feat/issue-{issue-number}-task-{task-number}
+- PR 作成前に `mise run lint` を必須実行
+- commit message は Conventional Commits 形式: <type>(<scope>): <description>
+```
 
-`orc wt rm` 時は、通常DBとテストDBを削除。
+**悪い例（曖昧）:**
+```
+- 適切なブランチ名をつける
+- テストをちゃんとやる
+```
 
-### 3.3 開発フローガイド
+| ファイル | 内容 |
+|----------|------|
+| `branch-strategy.md` | ブランチ命名規則、main への直 push 禁止、Worktree 前提の運用 |
+| `coding-work.md` | コーディング規約（Biome準拠）、禁止パターン、import ルール |
+| `commit.md` | Conventional Commits、スコープの定義、1 commit 1 関心事 |
+| `testing.md` | テスト必須範囲、実行コマンド、カバレッジ基準 |
+| `review-checklist.md` | PR 提出前の自己チェック項目（lint/test/型チェック/TASK.md更新） |
 
-- `docs/guidelines/development-workflow.md`
-- `docs/guidelines/orc-wt.md`
-- `docs/guidelines/feature-plan-and-task.md`
+### 5.3 `templates/` — PLAN/TASK テンプレート
 
-AI作業と人手作業を同じフロー（Notion item → PLAN/TASK → worktree → PR → done）に合わせている。
+AI が計画ドキュメントを生成する際の雛形。frontmatter でメタデータを管理する。
 
-## 4. 開発体験（DX）を支える設定
+---
 
-### 4.1 ツールチェーン統一（`mise.toml`）
+## 6. `features/` ディレクトリの役割
 
-- Node/Bun/Rust/Go/AWS CLI/gh/Codex CLI などを宣言的に管理
-- `mise run` に主要タスクを集約
-  - `dev`, `lint`, `test`, `integration`, `e2e`
-  - `db:*`
-  - `orc:install`, `toys3:install`
+Issue 単位で計画とタスクを管理する。AI の判断履歴を Git で追跡する。
 
-### 4.2 Dev Container標準化（`.devcontainer/`）
+```text
+features/
+└── 123/                    # Issue #123
+    ├── PLAN.md             # 計画書（タスク分解・リスク・完了条件）
+    ├── 1/
+    │   └── TASK.md         # Task 1: DB スキーマ作成
+    ├── 2/
+    │   └── TASK.md         # Task 2: API エンドポイント実装
+    └── 3/
+        └── TASK.md         # Task 3: フロントエンド実装
+```
 
-- `devcontainer.json`
-  - 各種永続volume（mise, aws, node_modules, worktrees, codex, claude, cursor, rust）
-  - VSCode拡張・formatter設定を配布
-- `post-create.sh`
-  - ビルドツール導入、`mise install`、Claude CLI導入、`orc/toys3` ビルド
-  - `core.hooksPath=.githooks` を設定
-- `post-start.sh`
-  - postgres起動（`docker-compose up -d`）
-  - `orc doctor` / `toys3 start`
+### PLAN.md テンプレート
 
-### 4.3 Git Hooks（`.githooks/`）
+```md
+---
+issueNumber: <number>
+title: "<issue-title>"
+status: draft | approved | in-progress | done
+ownerAgent: claude | codex
+createdAt: <ISO-8601>
+---
 
-- `commit-msg`
-  - Conventional Commits + type/scopeチェック
-  - ブランチ名から `[ITEM-x]` `[TASK-x-y]` を自動付与
-- `pre-push`
-  - `tools/orc/**/*.rs` / `tools/toys3/**/*.rs` 変更時、`Cargo.toml` の version bump を必須化
+# Goal
+<!-- Issue の目的を 1-2 文で要約 -->
 
-### 4.4 GitHub Actions（`.github/workflows/`）
+# Scope
+<!-- 変更対象のモジュール・ファイル範囲 -->
 
-- `pr.yml`: PR時に lint/test（TypeScript/Rust変更時）
-- `check-task-done.yml`: PRタイトルの `[TASK-x-y]` をもとに `orc features is-done-task` 実行
-- `update-features.yml`: `features/**` 更新を契機に `FEATURES.md` / `PLAN.md` 同期PRを自動作成
+# Task Breakdown
+| # | タスク概要 | ブランチ名 | 見積 |
+|---|-----------|-----------|------|
+| 1 | ... | feat/issue-123-task-1 | S |
+| 2 | ... | feat/issue-123-task-2 | M |
+| 3 | ... | feat/issue-123-task-3 | S |
 
-### 4.5 ドキュメント配置
+# Risks
+<!-- 実装上のリスクと対策 -->
 
-- 全体方針: `docs/`
-- 運用ガイド: `docs/guidelines/`
-- Tips: `docs/tips/`
+# Definition of Done
+- [ ] すべての Task が done
+- [ ] lint/test パス
+- [ ] PR レビュー済み
+```
 
-実装だけでなく、運用ルールを文書で持つことでAIのコンテキスト品質を担保している。
+### TASK.md テンプレート
 
-## 5. 他プロジェクトへ適用するための実装チェックリスト
+```md
+---
+issueNumber: <number>
+taskNumber: <number>
+status: todo | doing | done
+branchName: feat/issue-<issue>-task-<task>
+worktreePath: .worktrees/issue-<issue>-task-<task>
+---
 
-### Phase 1: 最小構成（まず入れる）
+# Context
+<!-- この Task が解決する問題 -->
 
-1. `AGENTS.md` を作成し、必読ルール一覧を定義する。
-2. `.agent/rules` に branch/workflow/commit/test 方針を文書化する。
-3. `.agent/commands` で `plan -> run -> pr -> done` の依頼テンプレートを作る。
-4. `features/` に PLAN/TASK テンプレートを導入する。
-5. `mise.toml` で `dev/lint/test` を統一する。
+# Implementation Steps
+1. ...
+2. ...
+3. ...
 
-### Phase 2: 並行開発と自動化
+# Files to Change
+- `packages/modules/xxx/write/...`
+- `apps/web/src/routes/...`
 
-1. `orc` 相当CLI（または同等スクリプト）で worktree管理を自動化する。
-2. `.orc.toml` 相当で worktree作成/削除時フックを設定する。
-3. `.githooks` を導入し commit/push ガードを追加する。
-4. GitHub Actions に `PR checks` と `TASK done check` を追加する。
+# Verification
+- [ ] `mise run lint` パス
+- [ ] `bun test` パス（該当テストがある場合）
+- [ ] 手動確認項目（該当する場合）
 
-### Phase 3: 通知・運用強化
+# Commit Plan
+- `feat(xxx): <description>`
+```
 
-1. Claude/Codex/Cursorごとの通知連携を実装する。
-2. `orc features update` 相当でダッシュボードファイル（`FEATURES.md`）を自動更新する。
-3. `docs/guidelines` を拡充し、AIが参照できる設計知識を蓄積する。
+---
 
-## 6. 設計時の注意点（AI参照用）
+## 7. セットアップ手順
 
-- AIに対する指示は「口頭運用」ではなく、必ずファイル化してリポジトリ管理する。
-- エージェント固有設定は分離しつつ、共通ルールは `.agent` に集約する。
-- worktree + ブランチ単位DB分離を組み合わせると、AIの並列実装時の衝突を大きく減らせる。
-- CIは「コード品質」だけでなく「運用メタデータ（PLAN/TASK整合）」も検証対象にする。
-- 機密情報を含む設定（例: `.codex/config.toml`, 認証情報）はGit管理から除外し、READMEで手動設定手順を提供する。
+### Step 0: ひな形を一括生成する
 
-## 7. 参照ファイル（このプロジェクト）
+AI はこのコマンドをそのまま実行してよい。
 
-- AI共通: `AGENTS.md`, `.agent/rules/*`, `.agent/commands/*`, `.agent/templates/*`
-- エージェント別: `.claude/*`, `.cursor/notify.sh`, `docs/codex.md`, `README.md`
-- 並行開発: `.orc.toml`, `tools/orc/*`, `docs/guidelines/orc-wt.md`
-- DX: `mise.toml`, `.devcontainer/*`, `.githooks/*`, `.github/workflows/*`, `docker-compose.yml`
-- 運用ドキュメント: `docs/guidelines/*`, `FEATURES.md`
+```bash
+# ディレクトリ作成
+mkdir -p .agent/commands .agent/rules .agent/templates \
+         features \
+         tools/aidd/src \
+         .github/workflows
+
+# ファイル生成
+touch AGENTS.md \
+  .agent/commands/issue-plan.md \
+  .agent/commands/task-run.md \
+  .agent/commands/task-done.md \
+  .agent/commands/pr-create.md \
+  .agent/rules/branch-strategy.md \
+  .agent/rules/coding-work.md \
+  .agent/rules/commit.md \
+  .agent/rules/testing.md \
+  .agent/rules/review-checklist.md \
+  .agent/templates/PLAN.md \
+  .agent/templates/TASK.md
+```
+
+### Step 1: AGENTS.md — AIの入口を固定する
+
+`AGENTS.md` を作成し、AI が最初に読むべき情報と順序を固定する。
+
+```md
+# AGENTS.md
+
+## Project
+TanStack Start + Supabase モジュラーモノリス。
+Bun workspaces モノレポ（apps/*, packages/*）。
+
+## Read Order
+1. docs/ai-driven-development-setup.md — AI駆動開発の全体設計
+2. docs/application-architecture.md — アーキテクチャ設計
+3. .agent/rules/* — 遵守ルール一式
+4. .agent/templates/* — PLAN/TASK テンプレート
+
+## Global Rules
+- すべての作業は Issue 番号起点で開始する
+- 実装前に PLAN.md / TASK.md を生成・更新する
+- すべての変更は Worktree 上で行う（main 直接変更禁止）
+- 完了前に lint / test を実行する
+- 破壊的コマンド（force push, reset --hard, drop table 等）は禁止
+
+## Forbidden Actions
+- main ブランチへの直接 commit / push
+- .env ファイルのコミット
+- 他人の Worktree の削除
+- AGENTS.md / .agent/rules/* の無断変更
+```
+
+### Step 2: ルールを `.agent/rules/` に配置する
+
+各ルールファイルの記述要件を以下に示す。
+
+#### `branch-strategy.md`
+
+```md
+# Branch Strategy
+
+## Naming
+- 形式: `feat/issue-{issue-number}-task-{task-number}`
+- 例: `feat/issue-123-task-1`
+
+## Rules
+- main への直接 push は禁止
+- すべての変更は feature ブランチで行う
+- feature ブランチは Worktree 経由で作成する
+- マージ後のブランチは削除する
+
+## Worktree Path
+- 形式: `.worktrees/issue-{issue-number}-task-{task-number}`
+- ルートの `.gitignore` に `.worktrees/` を追加する
+```
+
+#### `commit.md`
+
+```md
+# Commit Rules
+
+## Format
+Conventional Commits: `<type>(<scope>): <description>`
+
+## Types
+- feat: 新機能
+- fix: バグ修正
+- refactor: リファクタリング
+- test: テスト追加・修正
+- docs: ドキュメント変更
+- chore: ビルド・CI 設定変更
+
+## Scope
+- モジュール名またはアプリ名を使用
+- 例: `feat(auth): add login endpoint`
+
+## Rules
+- 1 commit = 1 関心事
+- WIP コミット禁止（squash 前提の場合を除く）
+- commit 前に `mise run lint` を実行する
+```
+
+#### `review-checklist.md`
+
+```md
+# PR 提出前チェックリスト
+
+PR を作成する前に、以下をすべて確認する。
+
+- [ ] `mise run lint` がエラーなしで通る
+- [ ] `bun test`（該当するテストがある場合）がパスする
+- [ ] TASK.md の status が `done` に更新されている
+- [ ] TASK.md の Verification チェック項目がすべて完了している
+- [ ] 不要なデバッグコード・console.log が残っていない
+- [ ] .env ファイルがコミットに含まれていない
+- [ ] PR タイトルが規約に従っている: `[TASK-<issue>-<task>] <summary>`
+```
+
+### Step 3: PLAN/TASK テンプレートを配置する
+
+[6. `features/` ディレクトリの役割](#6-features-ディレクトリの役割) に記載したテンプレートを `.agent/templates/PLAN.md` と `.agent/templates/TASK.md` に配置する。
+
+### Step 4: Issue起点の計画フローをコマンド化する
+
+`.agent/commands/issue-plan.md` を作成する。
+
+```md
+# issue-plan コマンド
+
+## Usage
+`/issue-plan <issue-number>`
+
+## Flow
+
+### 1. Issue 情報を取得
+```bash
+gh issue view <issue-number> --json number,title,body,labels,assignees
+```
+
+### 2. PLAN.md を生成
+- テンプレート: `.agent/templates/PLAN.md`
+- 出力先: `features/<issue-number>/PLAN.md`
+- Issue の body を解析し、Goal / Scope / Risks を埋める
+
+### 3. Task 分解
+- Plan Mode で Issue を分析し、実装単位に分解する
+- 各 Task に対して `features/<issue-number>/<task-number>/TASK.md` を生成
+- テンプレート: `.agent/templates/TASK.md`
+
+### 4. ブランチ名を付与
+- 各 TASK.md の frontmatter `branchName` に `feat/issue-<N>-task-<T>` を記入
+
+### 5. 開発者に承認を求める
+- PLAN.md の内容を提示し、承認を待つ
+```
+
+`.agent/commands/task-run.md`:
+
+```md
+# task-run コマンド
+
+## Usage
+`/task-run <issue-number> <task-number>`
+
+## Flow
+
+### 1. TASK.md を読み込む
+```bash
+cat features/<issue-number>/<task-number>/TASK.md
+```
+
+### 2. Worktree を準備
+```bash
+aidd wt ensure <issue-number> <task-number>
+```
+CLI が未導入の場合は以下を手動実行:
+```bash
+BRANCH=feat/issue-<issue>-task-<task>
+WT_PATH=.worktrees/issue-<issue>-task-<task>
+git worktree add -b $BRANCH $WT_PATH main
+cd $WT_PATH
+bun install
+```
+
+### 3. 実装
+- TASK.md の Implementation Steps に従って実装する
+- TASK.md の status を `doing` に更新する
+
+### 4. 検証
+- TASK.md の Verification 項目を実行する
+```
+
+`.agent/commands/task-done.md`:
+
+```md
+# task-done コマンド
+
+## Usage
+`/task-done <issue-number> <task-number>`
+
+## Flow
+
+### 1. 検証を実行
+```bash
+mise run lint
+bun test  # 該当テストがある場合
+```
+
+### 2. 変更をコミット
+```bash
+git add -A
+git commit -m "<type>(<scope>): <description>"
+```
+- Conventional Commits 形式を使用
+- TASK.md の Commit Plan に従う
+
+### 3. PR を作成
+```bash
+git push -u origin feat/issue-<issue>-task-<task>
+gh pr create \
+  --title "[TASK-<issue>-<task>] <summary>" \
+  --body "## Summary\n...\n## Related Issue\nCloses #<issue>"
+```
+
+### 4. ステータスを更新
+- TASK.md の status を `done` に変更
+- すべての Task が完了していれば PLAN.md の status も `done` に変更
+```
+
+### Step 5: `.gitignore` を更新する
+
+```bash
+echo '.worktrees/' >> .gitignore
+```
+
+### Step 6: CI ワークフローを作成する
+
+[10. CI による運用ルール強制](#10-ci-による運用ルール強制) の定義に基づいてワークフローを作成する。
+
+---
+
+## 8. 独自CLI `aidd` の設計
+
+Worktree・Issue・Task・PR の操作を統合する CLI ツール。開発者が Worktree 操作を意識せずに AI 経由で作業を完結できるようにする。
+
+### サブコマンド一覧
+
+| コマンド | 責務 |
+|---------|------|
+| `aidd issue plan <issue-number>` | Issue取得→PLAN/TASK生成 |
+| `aidd wt ensure <issue-number> <task-number>` | Worktree作成・ブランチ作成・依存セットアップ |
+| `aidd wt remove <issue-number> <task-number>` | Worktree削除・ブランチクリーンアップ |
+| `aidd task run <issue-number> <task-number>` | Worktree準備→TASK読み込み→実装開始 |
+| `aidd task done <issue-number> <task-number>` | 検証→commit→PR作成→ステータス更新 |
+| `aidd pr create <issue-number> <task-number>` | PR作成のみ |
+| `aidd status` | 全 Issue/Task のステータス一覧 |
+
+### `aidd wt ensure` の詳細
+
+このコマンドが Worktree 自動化の中核を担う。
+
+```
+aidd wt ensure 123 1
+  │
+  ├─ 1. ブランチ存在確認
+  │     git branch --list feat/issue-123-task-1
+  │
+  ├─ 2. Worktree 作成（なければ）
+  │     git worktree add -b feat/issue-123-task-1 \
+  │       .worktrees/issue-123-task-1 main
+  │
+  ├─ 3. 依存インストール
+  │     cd .worktrees/issue-123-task-1
+  │     mise install
+  │     bun install
+  │
+  ├─ 4. .env 配置（必要なら）
+  │     cp ../.env .env  # テンプレートから生成
+  │
+  └─ 5. 作業ディレクトリを返す
+        → .worktrees/issue-123-task-1
+```
+
+### 技術選定
+
+| 項目 | 選定 | 理由 |
+|------|------|------|
+| 言語 | Rust（推奨）またはシェルスクリプト（初期） | Rust: 型安全・クロスプラットフォーム。初期はシェルスクリプトで MVP 可 |
+| 配布 | `tools/aidd/` にソースを配置 | モノレポ内で管理 |
+| 依存 | `gh`, `git`, `bun`, `mise` | すべて mise 経由でインストール済み前提 |
+
+### 段階的な導入方針
+
+```
+Phase 1: シェルスクリプト MVP
+  → tools/aidd/aidd.sh として基本コマンドを実装
+  → AI エージェントが直接呼び出せる状態を作る
+
+Phase 2: Rust CLI 化
+  → tools/aidd/src/main.rs に移行
+  → エラーハンドリング・ログ出力を強化
+
+Phase 3: AI エージェント統合
+  → Claude Code の custom command として登録
+  → /issue-plan, /task-run 等から aidd を透過的に呼び出す
+```
+
+---
+
+## 9. Worktree 自動化
+
+### 設計方針
+
+- Worktree は「任意の機能」ではなく「標準の作業経路」とする
+- 開発者は Worktree の存在を意識しない — AI が自動で作成・切替・削除する
+- `aidd wt ensure` を唯一のエントリポイントとし、冪等に動作させる
+
+### Worktree ライフサイクル
+
+```
+[Task開始]
+  aidd wt ensure <issue> <task>
+    → Worktree作成 + ブランチ作成 + 依存セットアップ
+
+[実装中]
+  Worktree 内で作業
+    → .worktrees/issue-<N>-task-<T>/ が作業ディレクトリ
+
+[Task完了]
+  aidd task done <issue> <task>
+    → commit + PR作成
+
+[PR マージ後]
+  aidd wt remove <issue> <task>
+    → Worktree削除 + ローカルブランチ削除
+```
+
+### 並列開発
+
+Worktree により、複数の Issue/Task を同時並行で開発できる。
+
+```
+メインリポジトリ (./)
+├── .worktrees/
+│   ├── issue-123-task-1/    ← AI Agent A が作業中
+│   ├── issue-123-task-2/    ← AI Agent B が作業中
+│   └── issue-456-task-1/    ← AI Agent C が作業中
+```
+
+- 各 Worktree は独立したディレクトリ・ブランチを持つ
+- `bun install` は各 Worktree で独立実行する
+- `node_modules` は Worktree ごとに作られる
+
+---
+
+## 10. CI による運用ルール強制
+
+### `.github/workflows/pr-check.yml`
+
+PR が作成・更新されたときに実行する基本チェック。
+
+```yaml
+name: PR Check
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - run: bun install
+      - run: mise run lint
+      - run: bun test
+```
+
+### `.github/workflows/task-integrity.yml`
+
+TASK.md の整合性を検証する。AI が正しいフローで作業したことを保証する。
+
+```yaml
+name: Task Integrity
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract issue/task from PR title
+        id: extract
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          if [[ "$TITLE" =~ ^\[TASK-([0-9]+)-([0-9]+)\] ]]; then
+            echo "issue=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+            echo "task=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::PR title does not match [TASK-N-N] format"
+            exit 0
+          fi
+
+      - name: Verify TASK.md exists
+        if: steps.extract.outputs.issue
+        run: |
+          ISSUE=${{ steps.extract.outputs.issue }}
+          TASK=${{ steps.extract.outputs.task }}
+          TASK_FILE="features/${ISSUE}/${TASK}/TASK.md"
+          if [ ! -f "$TASK_FILE" ]; then
+            echo "::error::${TASK_FILE} が存在しません"
+            exit 1
+          fi
+
+      - name: Verify TASK.md status is done
+        if: steps.extract.outputs.issue
+        run: |
+          ISSUE=${{ steps.extract.outputs.issue }}
+          TASK=${{ steps.extract.outputs.task }}
+          TASK_FILE="features/${ISSUE}/${TASK}/TASK.md"
+          if ! grep -q 'status: done' "$TASK_FILE"; then
+            echo "::error::${TASK_FILE} の status が done ではありません"
+            exit 1
+          fi
+```
+
+### CI チェック項目一覧
+
+| チェック | ワークフロー | 失敗時の影響 |
+|---------|-------------|-------------|
+| `mise run lint` パス | pr-check | PR マージ不可 |
+| `bun test` パス | pr-check | PR マージ不可 |
+| PR タイトルが `[TASK-N-N]` 形式 | task-integrity | 警告（ブロックしない） |
+| `TASK.md` が存在する | task-integrity | PR マージ不可 |
+| `TASK.md` の status が `done` | task-integrity | PR マージ不可 |
+| ルールファイル変更時の必須レビュー | CODEOWNERS | 承認なしでマージ不可 |
+
+### CODEOWNERS（推奨）
+
+```
+# .github/CODEOWNERS
+AGENTS.md            @project-owner
+.agent/rules/*       @project-owner
+.agent/templates/*   @project-owner
+```
+
+---
+
+## 11. AI自走ランブック（運用時）
+
+AI は Issue 番号を受け取ったら、以下の順で自律的に動作する。
+
+### Phase 1: 計画
+
+```bash
+# 1. Issue 情報を取得
+gh issue view 123 --json number,title,body,labels,assignees
+
+# 2. features ディレクトリを作成
+mkdir -p features/123
+
+# 3. PLAN.md を生成
+# .agent/templates/PLAN.md をベースに、Issue の内容から Goal/Scope/Risks を埋める
+# → features/123/PLAN.md
+
+# 4. Task 分解
+# Plan Mode で Issue を分析し、実装単位の TASK.md を生成
+# → features/123/1/TASK.md
+# → features/123/2/TASK.md
+# → ...
+```
+
+### Phase 2: 実装（Task ごとに繰り返す）
+
+```bash
+# 5. Worktree を準備
+aidd wt ensure 123 1
+# CLI 未導入時の手動代替:
+#   git worktree add -b feat/issue-123-task-1 \
+#     .worktrees/issue-123-task-1 main
+#   cd .worktrees/issue-123-task-1 && bun install
+
+# 6. TASK.md に従って実装
+# features/123/1/TASK.md の Implementation Steps に従う
+
+# 7. 検証
+mise run lint
+bun test  # 該当テストがある場合
+```
+
+### Phase 3: 完了
+
+```bash
+# 8. commit
+git add -A
+git commit -m "feat(auth): add login endpoint"
+
+# 9. PR 作成
+git push -u origin feat/issue-123-task-1
+gh pr create \
+  --title "[TASK-123-1] Add login endpoint" \
+  --body "## Summary
+- ログインエンドポイントを追加
+
+## Related Issue
+Closes #123
+
+## Verification
+- [x] mise run lint
+- [x] bun test"
+
+# 10. ステータス更新
+# features/123/1/TASK.md の status → done
+# すべての Task が done なら features/123/PLAN.md の status → done
+```
+
+### Claude Code での実行例
+
+```
+> /issue-plan 123
+→ PLAN.md と TASK.md が生成される
+→ 開発者が Plan を確認・承認
+
+> /task-run 123 1
+→ Worktree が作成され、実装が開始される
+
+> /task-done 123 1
+→ lint/test → commit → PR 作成
+```
+
+### Codex での実行例
+
+```
+Plan Mode:
+  "Issue #123 を読んで PLAN.md と TASK.md を生成してください"
+
+Execute Mode:
+  "features/123/1/TASK.md に従って実装してください"
+```
+
+---
+
+## 12. 品質を維持するための設計原則
+
+| 原則 | 実践 |
+|------|------|
+| ルールは自然言語でなく実行条件として書く | `.agent/rules/*` に機械実行可能な形式で記述 |
+| PLAN/TASK は必ず Git 管理する | AI の判断履歴を `features/` 配下で追跡 |
+| Worktree は標準経路にする | `aidd wt ensure` を唯一のエントリポイントにする |
+| 手動運用を減らす | CLI と CI に責務を寄せる |
+| エージェント依存設定は Git 管理しない | `~/.codex`, `~/.claude` は `.gitignore` 対象外（ホーム配下） |
+| ルール変更は人間が承認する | CODEOWNERS で `.agent/rules/*` を保護 |
+| CI で整合性を強制する | PR チェック + TASK.md 整合性チェック |
+
+---
+
+## 13. 導入チェックリスト
+
+### ファイル・ディレクトリ
+
+- [ ] `AGENTS.md` が存在し、必読順序・グローバルルールが記載されている
+- [ ] `.agent/rules/` に以下が存在する:
+  - [ ] `branch-strategy.md`
+  - [ ] `coding-work.md`
+  - [ ] `commit.md`
+  - [ ] `testing.md`
+  - [ ] `review-checklist.md`
+- [ ] `.agent/commands/` に以下が存在する:
+  - [ ] `issue-plan.md`
+  - [ ] `task-run.md`
+  - [ ] `task-done.md`
+  - [ ] `pr-create.md`
+- [ ] `.agent/templates/PLAN.md` と `.agent/templates/TASK.md` が存在する
+- [ ] `.gitignore` に `.worktrees/` が追加されている
+
+### CI
+
+- [ ] `.github/workflows/pr-check.yml` が lint/test を実行する
+- [ ] `.github/workflows/task-integrity.yml` が TASK.md の整合性をチェックする
+- [ ] `.github/CODEOWNERS` でルールファイルが保護されている（推奨）
+
+### CLI
+
+- [ ] `aidd` CLI が以下のサブコマンドを持つ（または手動代替手順が文書化されている）:
+  - [ ] `issue plan`
+  - [ ] `wt ensure` / `wt remove`
+  - [ ] `task run` / `task done`
+  - [ ] `pr create`
+
+### 運用
+
+- [ ] AI が Issue 番号から PLAN.md / TASK.md を生成できる
+- [ ] AI が TASK.md に従って実装→commit→PR を完走できる
+- [ ] Worktree を使った並列開発が動作する
+- [ ] 開発者の介入ポイントが Plan 承認と PR レビューの 2 点のみに制限されている
