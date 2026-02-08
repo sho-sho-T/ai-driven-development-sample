@@ -45,7 +45,17 @@ else
 fi
 
 # ---------------------------------------------------
-# 5. Install AI development tools
+# 5. Build and install aidd CLI
+# ---------------------------------------------------
+echo "--- Installing aidd CLI ---"
+if [ -f "${WORKSPACE}/tools/aidd/Cargo.toml" ]; then
+  cargo install --path "${WORKSPACE}/tools/aidd"
+else
+  echo "WARN: tools/aidd not found, skipping aidd install"
+fi
+
+# ---------------------------------------------------
+# 6. Install AI development tools
 # ---------------------------------------------------
 echo "--- Installing Claude Code ---"
 curl -fsSL https://claude.ai/install.sh | bash
@@ -54,7 +64,7 @@ echo "--- Installing Codex ---"
 npm install -g @openai/codex
 
 # ---------------------------------------------------
-# 6. Configure shell (bashrc)
+# 7. Configure shell (bashrc)
 # ---------------------------------------------------
 echo "--- Configuring shell ---"
 BASHRC="$HOME/.bashrc"
@@ -65,7 +75,8 @@ if ! grep -q "$MARKER" "$BASHRC" 2>/dev/null; then
 
 # === ai-driven-development-sample ===
 # mise: add shims to PATH (makes all mise-managed tools available)
-export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+# cargo: add cargo bin to PATH (for aidd CLI and other Rust tools)
+export PATH="$HOME/.cargo/bin:$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
 
 # mise completion
 eval "$(~/.local/bin/mise completion bash 2>/dev/null || true)"
@@ -83,13 +94,13 @@ SHELL_CONFIG
 fi
 
 # ---------------------------------------------------
-# 7. Git safe.directory
+# 8. Git safe.directory
 # ---------------------------------------------------
 echo "--- Configuring git ---"
 git config --global --add safe.directory "${WORKSPACE}"
 
 # ---------------------------------------------------
-# 8. Run local customization script (if exists)
+# 9. Run local customization script (if exists)
 # ---------------------------------------------------
 if [ -f ".devcontainer/post-create.local.sh" ]; then
   echo "--- Running post-create.local.sh ---"
