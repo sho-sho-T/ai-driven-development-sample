@@ -6,13 +6,28 @@
 
 ## Flow
 
-### 1. ブランチを push
+### 1. PR の作成
+
+`aidd` CLI が利用可能な場合:
+
+```bash
+aidd pr create <issue-number> <task-number>
+```
+
+これにより以下が自動実行される:
+- ブランチの push
+- PR の作成（タイトル: `[TASK-<issue>-<task>] <summary>`）
+- PR URL の出力
+
+### 手動フォールバック（`aidd` 未導入時）
+
+#### ブランチを push
 
 ```bash
 git push -u origin feat/issue-<issue>-task-<task>
 ```
 
-### 2. PR を作成
+#### PR を作成
 
 ```bash
 gh pr create \
@@ -28,6 +43,6 @@ Closes #<issue>
 - [x] bun test"
 ```
 
-### 3. PR URL を出力
+### 2. PR URL を出力
 
 作成した PR の URL を表示する。

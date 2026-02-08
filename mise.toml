@@ -3,6 +3,7 @@ bun = "latest"
 node = "22"
 "aqua:supabase/cli" = "latest"
 gh = "latest"
+rust = "latest"
 
 [tasks.dev]
 description = "Start TanStack Start dev server"

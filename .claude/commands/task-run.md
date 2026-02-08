@@ -6,19 +6,26 @@
 
 ## Flow
 
-### 1. TASK.md を読み込む
+### 1. タスクの準備と開始
+
+`aidd` CLI が利用可能な場合:
+
+```bash
+aidd task run <issue-number> <task-number>
+```
+
+これにより以下が自動実行される:
+- TASK.md の読み込みと表示
+- Worktree の作成（`wt ensure` を内部呼び出し）
+- TASK.md の status を `doing` に更新
+
+### 手動フォールバック（`aidd` 未導入時）
 
 ```bash
 cat features/<issue-number>/<task-number>/TASK.md
 ```
 
-### 2. Worktree を準備
-
-```bash
-aidd wt ensure <issue-number> <task-number>
-```
-
-CLI が未導入の場合は以下を手動実行:
+Worktree を手動で準備:
 
 ```bash
 BRANCH=feat/issue-<issue>-task-<task>
@@ -28,11 +35,11 @@ cd $WT_PATH
 bun install
 ```
 
-### 3. 実装
+### 2. 実装
 
 - TASK.md の Implementation Steps に従って実装する
 - TASK.md の status を `doing` に更新する
 
-### 4. 検証
+### 3. 検証
 
 - TASK.md の Verification 項目を実行する
