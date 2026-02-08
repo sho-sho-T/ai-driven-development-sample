@@ -1,0 +1,30 @@
+.dev-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dev-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.dev-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dev-env {
+  color: #059669;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  background: #d1fae5;
+  border-radius: 0.375rem;
+}

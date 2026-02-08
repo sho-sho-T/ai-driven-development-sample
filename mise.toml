@@ -12,6 +12,20 @@ run = "cd apps/web && bun run dev"
 description = "Start admin-web dev server"
 run = "cd apps/admin-web && bun run dev"
 
+[tasks."dev:console"]
+description = "Start dev-console dev server"
+run = "cd apps/dev-console && bun run dev"
+
+[tasks."dev:all"]
+description = "Start all applications (web:3000, admin-web:3001, dev-console:3002)"
+run = """
+trap 'kill 0' INT TERM EXIT
+(cd apps/web && bun run dev) &
+(cd apps/admin-web && bun run dev) &
+(cd apps/dev-console && bun run dev) &
+wait
+"""
+
 [tasks.lint]
 description = "Run lint checks with Biome"
 run = "bun run lint"

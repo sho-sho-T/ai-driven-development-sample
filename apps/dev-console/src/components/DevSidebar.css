@@ -1,0 +1,44 @@
+.dev-sidebar {
+  background: #0f172a;
+  color: white;
+  width: 250px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dev-sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.dev-sidebar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.dev-sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.dev-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.dev-nav-link:hover {
+  background: #1e293b;
+  color: white;
+}
+
+.dev-nav-link.active {
+  background: #1e293b;
+  color: white;
+  font-weight: 500;
+}

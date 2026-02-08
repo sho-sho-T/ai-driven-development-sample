@@ -15,7 +15,7 @@ const config = defineConfig({
   plugins: [
     devtools({
       eventBusConfig: {
-        port: 42069,
+        port: 42071,
       },
     }),
     nitro(),
