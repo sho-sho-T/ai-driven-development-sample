@@ -3,7 +3,8 @@
   "files": {
     "includes": [
       "**",
-      "!apps/web/src/routeTree.gen.ts"
+      "!apps/web/src/routeTree.gen.ts",
+      "!apps/admin-web/src/routeTree.gen.ts"
     ]
   },
   "formatter": {

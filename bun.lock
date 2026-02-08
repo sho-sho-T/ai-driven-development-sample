@@ -11,6 +11,36 @@
         "@biomejs/biome": "^2.3.14",
       },
     },
+    "apps/admin-web": {
+      "name": "@sample/admin-web",
+      "dependencies": {
+        "@tanstack/react-devtools": "^0.7.0",
+        "@tanstack/react-router": "^1.132.0",
+        "@tanstack/react-router-devtools": "^1.132.0",
+        "@tanstack/react-router-ssr-query": "^1.131.7",
+        "@tanstack/react-start": "^1.132.0",
+        "@tanstack/router-plugin": "^1.132.0",
+        "lucide-react": "^0.561.0",
+        "nitro": "npm:nitro-nightly@latest",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "vite-tsconfig-paths": "^6.0.2",
+      },
+      "devDependencies": {
+        "@tanstack/devtools-vite": "^0.3.11",
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/react": "^16.2.0",
+        "@types/node": "^22.10.2",
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "@vitejs/plugin-react": "^5.0.4",
+        "jsdom": "^27.0.0",
+        "typescript": "^5.7.2",
+        "vite": "^7.1.7",
+        "vitest": "^3.0.5",
+        "web-vitals": "^5.1.0",
+      },
+    },
     "apps/web": {
       "name": "@sample/web",
       "dependencies": {
@@ -284,6 +314,8 @@
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.57.1", "", { "os": "win32", "cpu": "x64" }, "sha512-VMBH2eOOaKGtIJYleXsi2B8CPVADrh+TyNxJ4mWPnKfLB/DBUmzW+5m1xUrcwWoMfSLagIRpjUFeW5CO5hyciQ=="],
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.57.1", "", { "os": "win32", "cpu": "x64" }, "sha512-mxRFDdHIWRxg3UfIIAwCm6NzvxG0jDX/wBN6KsQFTvKFqqg9vTrWUE68qEjHt19A5wwx5X5aUi2zuZT7YR0jrA=="],
+
+    "@sample/admin-web": ["@sample/admin-web@workspace:apps/admin-web"],
 
     "@sample/web": ["@sample/web@workspace:apps/web"],
 

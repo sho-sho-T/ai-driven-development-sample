@@ -8,6 +8,10 @@ gh = "latest"
 description = "Start TanStack Start dev server"
 run = "cd apps/web && bun run dev"
 
+[tasks."dev:admin"]
+description = "Start admin-web dev server"
+run = "cd apps/admin-web && bun run dev"
+
 [tasks.lint]
 description = "Run lint checks with Biome"
 run = "bun run lint"
