@@ -7,10 +7,14 @@
 	},
 	"workspaces": [
 		"apps/*",
-		"packages/*"
+		"packages/shared-kernel/*",
+		"packages/contracts/*",
+		"packages/modules/*"
 	],
 	"dependencies": {
-		"nitro": "npm:nitro-nightly@latest"
+		"neverthrow": "^8.2.0",
+		"nitro": "npm:nitro-nightly@latest",
+		"zod": "^3.24.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.14"
