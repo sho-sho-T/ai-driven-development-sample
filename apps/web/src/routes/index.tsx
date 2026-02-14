@@ -1,37 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
-import "../App.css";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({ component: HomePage });
 
-function App() {
+function HomePage() {
 	return (
-		<div className="App">
-			<header className="App-header">
-				<img
-					src="/tanstack-circle-logo.png"
-					className="App-logo"
-					alt="TanStack Logo"
-				/>
-				<p>
-					Edit <code>src/routes/index.tsx</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-				<a
-					className="App-link"
-					href="https://tanstack.com"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn TanStack
-				</a>
-			</header>
+		<div className="flex min-h-[60vh] items-center justify-center">
+			<Card className="w-full max-w-md text-center">
+				<CardHeader className="space-y-4">
+					<CardTitle className="text-3xl">Library Management</CardTitle>
+					<CardDescription>Manage your book catalog with ease.</CardDescription>
+					<Button asChild size="lg" className="mt-4">
+						<Link to="/books">Browse Books</Link>
+					</Button>
+				</CardHeader>
+			</Card>
 		</div>
 	);
 }

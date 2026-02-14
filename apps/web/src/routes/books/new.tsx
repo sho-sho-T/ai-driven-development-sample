@@ -4,8 +4,14 @@
  * フォーム入力 → Server Function 経由で catalog.registerBook コマンドを実行。
  * 登録成功後は書籍一覧ページにリダイレクトする。
  */
-import { useState } from "react";
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { registerBook } from "../../server/catalog-server-fns.ts";
 
 export const Route = createFileRoute("/books/new")({
@@ -45,105 +51,88 @@ function NewBookPage() {
 	};
 
 	return (
-		<div className="mx-auto max-w-xl p-4">
-			<h1 className="mb-4 text-2xl font-bold">Register New Book</h1>
+		<div className="mx-auto max-w-xl">
+			<Card>
+				<CardHeader>
+					<CardTitle className="text-2xl">Register New Book</CardTitle>
+				</CardHeader>
+				<CardContent>
+					{error && (
+						<Alert variant="destructive" className="mb-6">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
 
-			{error && (
-				<div className="mb-4 rounded border border-red-300 bg-red-100 p-3 text-red-800">
-					{error}
-				</div>
-			)}
+					<form onSubmit={handleSubmit} className="space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="isbn">ISBN (13 digits) *</Label>
+							<Input
+								id="isbn"
+								name="isbn"
+								type="text"
+								required
+								pattern="\d{13}"
+								placeholder="9784101010014"
+							/>
+						</div>
 
-			<form onSubmit={handleSubmit}>
-				<div className="mb-4">
-					<label htmlFor="isbn" className="mb-1 block text-sm font-bold">
-						ISBN (13 digits) *
-					</label>
-					<input
-						id="isbn"
-						name="isbn"
-						type="text"
-						required
-						pattern="\d{13}"
-						placeholder="9784101010014"
-						className="w-full rounded border border-gray-300 p-2 text-base"
-					/>
-				</div>
+						<div className="space-y-2">
+							<Label htmlFor="title">Title *</Label>
+							<Input
+								id="title"
+								name="title"
+								type="text"
+								required
+								placeholder="Book title"
+							/>
+						</div>
 
-				<div className="mb-4">
-					<label htmlFor="title" className="mb-1 block text-sm font-bold">
-						Title *
-					</label>
-					<input
-						id="title"
-						name="title"
-						type="text"
-						required
-						placeholder="Book title"
-						className="w-full rounded border border-gray-300 p-2 text-base"
-					/>
-				</div>
+						<div className="space-y-2">
+							<Label htmlFor="author">Author *</Label>
+							<Input
+								id="author"
+								name="author"
+								type="text"
+								required
+								placeholder="Author name"
+							/>
+						</div>
 
-				<div className="mb-4">
-					<label htmlFor="author" className="mb-1 block text-sm font-bold">
-						Author *
-					</label>
-					<input
-						id="author"
-						name="author"
-						type="text"
-						required
-						placeholder="Author name"
-						className="w-full rounded border border-gray-300 p-2 text-base"
-					/>
-				</div>
+						<div className="space-y-2">
+							<Label htmlFor="publisher">Publisher</Label>
+							<Input
+								id="publisher"
+								name="publisher"
+								type="text"
+								placeholder="Publisher name"
+							/>
+						</div>
 
-				<div className="mb-4">
-					<label htmlFor="publisher" className="mb-1 block text-sm font-bold">
-						Publisher
-					</label>
-					<input
-						id="publisher"
-						name="publisher"
-						type="text"
-						placeholder="Publisher name"
-						className="w-full rounded border border-gray-300 p-2 text-base"
-					/>
-				</div>
+						<div className="space-y-2">
+							<Label htmlFor="publishedYear">Published Year</Label>
+							<Input
+								id="publishedYear"
+								name="publishedYear"
+								type="number"
+								placeholder="2024"
+							/>
+						</div>
 
-				<div className="mb-4">
-					<label
-						htmlFor="publishedYear"
-						className="mb-1 block text-sm font-bold"
-					>
-						Published Year
-					</label>
-					<input
-						id="publishedYear"
-						name="publishedYear"
-						type="number"
-						placeholder="2024"
-						className="w-full rounded border border-gray-300 p-2 text-base"
-					/>
-				</div>
-
-				<div className="mt-6 flex gap-2">
-					<button
-						type="submit"
-						disabled={submitting}
-						className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-base text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{submitting ? "Registering..." : "Register Book"}
-					</button>
-					<button
-						type="button"
-						onClick={() => navigate({ to: "/books" })}
-						className="cursor-pointer rounded border border-gray-300 bg-gray-100 px-6 py-2 text-base text-gray-700 hover:bg-gray-200"
-					>
-						Cancel
-					</button>
-				</div>
-			</form>
+						<div className="flex gap-2 pt-4">
+							<Button type="submit" disabled={submitting}>
+								{submitting ? "Registering..." : "Register Book"}
+							</Button>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => navigate({ to: "/books" })}
+							>
+								Cancel
+							</Button>
+						</div>
+					</form>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

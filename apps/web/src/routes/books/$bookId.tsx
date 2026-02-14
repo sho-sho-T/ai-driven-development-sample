@@ -5,6 +5,10 @@
  * Server Function 経由で catalog.getBookById クエリを実行する。
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { getBookById } from "../../server/catalog-server-fns.ts";
 
 export const Route = createFileRoute("/books/$bookId")({
@@ -12,72 +16,61 @@ export const Route = createFileRoute("/books/$bookId")({
 	loader: async ({ params }) => await getBookById({ data: params.bookId }),
 });
 
+function DetailRow({
+	label,
+	children,
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<div className="flex py-3">
+			<dt className="w-40 shrink-0 text-sm font-medium text-muted-foreground">
+				{label}
+			</dt>
+			<dd>{children}</dd>
+		</div>
+	);
+}
+
 function BookDetailPage() {
 	const book = Route.useLoaderData();
 
 	return (
-		<div className="mx-auto max-w-xl p-4">
-			<Link
-				to="/books"
-				className="mb-4 inline-block text-blue-600 hover:underline"
-			>
-				&larr; Back to list
-			</Link>
+		<div className="mx-auto max-w-xl">
+			<Button variant="ghost" asChild className="mb-4">
+				<Link to="/books">&larr; Back to list</Link>
+			</Button>
 
-			<h1 className="mb-4 text-2xl font-bold">{book.title}</h1>
-
-			<table className="w-full border-collapse">
-				<tbody>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">ID</th>
-						<td className="p-3">{book.id}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">ISBN</th>
-						<td className="p-3">{book.isbn}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">
-							Title
-						</th>
-						<td className="p-3">{book.title}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">
-							Author
-						</th>
-						<td className="p-3">{book.author}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">
-							Publisher
-						</th>
-						<td className="p-3">{book.publisher || "-"}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">
-							Published Year
-						</th>
-						<td className="p-3">{book.publishedYear ?? "-"}</td>
-					</tr>
-					<tr className="border-b border-gray-200">
-						<th className="w-40 p-3 text-left font-bold text-gray-500">
-							Status
-						</th>
-						<td className="p-3">
-							<span
-								className={`rounded px-2 py-0.5 text-sm ${
-									book.status === "available"
-										? "bg-green-100 text-green-800"
-										: "bg-orange-100 text-orange-800"
-								}`}
-							>
-								{book.status}
-							</span>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<Card>
+				<CardHeader>
+					<div className="flex items-center justify-between">
+						<CardTitle className="text-2xl">{book.title}</CardTitle>
+						<Badge
+							variant={book.status === "available" ? "default" : "secondary"}
+						>
+							{book.status}
+						</Badge>
+					</div>
+				</CardHeader>
+				<CardContent>
+					<dl>
+						<DetailRow label="ID">{book.id}</DetailRow>
+						<Separator />
+						<DetailRow label="ISBN">{book.isbn}</DetailRow>
+						<Separator />
+						<DetailRow label="Title">{book.title}</DetailRow>
+						<Separator />
+						<DetailRow label="Author">{book.author}</DetailRow>
+						<Separator />
+						<DetailRow label="Publisher">{book.publisher || "-"}</DetailRow>
+						<Separator />
+						<DetailRow label="Published Year">
+							{book.publishedYear ?? "-"}
+						</DetailRow>
+					</dl>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
