@@ -8,6 +8,15 @@
 			"!apps/dev-console/src/routeTree.gen.ts"
 		]
 	},
+	"css": {
+		"parser": {
+			"cssModules": false,
+			"tailwindDirectives": true
+		},
+		"linter": {
+			"enabled": true
+		}
+	},
 	"formatter": {
 		"enabled": true
 	},
