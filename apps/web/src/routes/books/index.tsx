@@ -1,97 +1,27 @@
 /**
- * 書籍一覧ページ（/books）。
+ * 書籍一覧ページ（/books）— 薄いルートファイル。
  *
- * Server Function 経由で catalog.listBooks クエリを実行し、
- * 書籍の一覧をテーブル形式で表示する。
+ * TanStack Start ではルートファイルが Next.js の Container Component の役割を果たす。
+ * - loader: SSR 時に queryClient.ensureQueryData で事前取得
+ * - component: useSuspenseQuery でキャッシュ済みデータを取得し Presenter に渡す
  *
- * - loader: SSR 時にサーバー側でデータ取得
- * - component: React コンポーネントで一覧を描画
+ * ルートファイルにはデータ取得の接続コードのみを置き、
+ * UI の描画は features/books/components/ の Presenter に委譲する。
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { listBooks } from "../../server/catalog-server-fns.ts";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { BookTable } from "../../features/books/components/book-table.tsx";
+import { bookListQueryOptions } from "../../features/books/hooks/use-book-queries.ts";
 
 export const Route = createFileRoute("/books/")({
 	component: BooksIndexPage,
-	loader: async () => await listBooks(),
+	// SSR: queryClient に書籍一覧をプリフェッチ
+	loader: ({ context: { queryClient } }) =>
+		queryClient.ensureQueryData(bookListQueryOptions()),
 });
 
 function BooksIndexPage() {
-	const data = Route.useLoaderData();
-
-	return (
-		<Card>
-			<CardHeader className="flex flex-row items-center justify-between">
-				<div>
-					<CardTitle className="text-2xl">Books</CardTitle>
-					<CardDescription>{data.total} book(s) registered</CardDescription>
-				</div>
-				<Button asChild>
-					<Link to="/books/new">Register New Book</Link>
-				</Button>
-			</CardHeader>
-			<CardContent>
-				{data.total === 0 ? (
-					<p className="text-muted-foreground">
-						No books registered yet. Register your first book!
-					</p>
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Title</TableHead>
-								<TableHead>Author</TableHead>
-								<TableHead>ISBN</TableHead>
-								<TableHead>Status</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{data.books.map((book) => (
-								<TableRow key={book.id}>
-									<TableCell>
-										<Link
-											to="/books/$bookId"
-											params={{ bookId: book.id }}
-											className="font-medium text-primary hover:underline"
-										>
-											{book.title}
-										</Link>
-									</TableCell>
-									<TableCell>{book.author}</TableCell>
-									<TableCell className="font-mono text-sm">
-										{book.isbn}
-									</TableCell>
-									<TableCell>
-										<Badge
-											variant={
-												book.status === "available" ? "default" : "secondary"
-											}
-										>
-											{book.status}
-										</Badge>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
-			</CardContent>
-		</Card>
-	);
+	// クライアント: SSR でキャッシュ済みのデータを即座に利用（再フェッチなし）
+	const { data } = useSuspenseQuery(bookListQueryOptions());
+	return <BookTable data={data} />;
 }

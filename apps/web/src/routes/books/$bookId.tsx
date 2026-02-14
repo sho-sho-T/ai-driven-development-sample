@@ -1,76 +1,25 @@
 /**
- * 書籍詳細ページ（/books/:bookId）。
+ * 書籍詳細ページ（/books/:bookId）— 薄いルートファイル。
  *
- * URL パラメータの bookId を使い、
- * Server Function 経由で catalog.getBookById クエリを実行する。
+ * URL パラメータの bookId を使い、loader で書籍データをプリフェッチ。
+ * コンポーネントでは useSuspenseQuery でキャッシュ済みデータを取得し、
+ * BookDetailCard Presenter に描画を委譲する。
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { getBookById } from "../../server/catalog-server-fns.ts";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { BookDetailCard } from "../../features/books/components/book-detail-card.tsx";
+import { bookDetailQueryOptions } from "../../features/books/hooks/use-book-queries.ts";
 
 export const Route = createFileRoute("/books/$bookId")({
 	component: BookDetailPage,
-	loader: async ({ params }) => await getBookById({ data: params.bookId }),
+	// SSR: bookId に基づいて書籍データをプリフェッチ
+	loader: ({ context: { queryClient }, params }) =>
+		queryClient.ensureQueryData(bookDetailQueryOptions(params.bookId)),
 });
 
-function DetailRow({
-	label,
-	children,
-}: {
-	label: string;
-	children: React.ReactNode;
-}) {
-	return (
-		<div className="flex py-3">
-			<dt className="w-40 shrink-0 text-sm font-medium text-muted-foreground">
-				{label}
-			</dt>
-			<dd>{children}</dd>
-		</div>
-	);
-}
-
 function BookDetailPage() {
-	const book = Route.useLoaderData();
-
-	return (
-		<div className="mx-auto max-w-xl">
-			<Button variant="ghost" asChild className="mb-4">
-				<Link to="/books">&larr; Back to list</Link>
-			</Button>
-
-			<Card>
-				<CardHeader>
-					<div className="flex items-center justify-between">
-						<CardTitle className="text-2xl">{book.title}</CardTitle>
-						<Badge
-							variant={book.status === "available" ? "default" : "secondary"}
-						>
-							{book.status}
-						</Badge>
-					</div>
-				</CardHeader>
-				<CardContent>
-					<dl>
-						<DetailRow label="ID">{book.id}</DetailRow>
-						<Separator />
-						<DetailRow label="ISBN">{book.isbn}</DetailRow>
-						<Separator />
-						<DetailRow label="Title">{book.title}</DetailRow>
-						<Separator />
-						<DetailRow label="Author">{book.author}</DetailRow>
-						<Separator />
-						<DetailRow label="Publisher">{book.publisher || "-"}</DetailRow>
-						<Separator />
-						<DetailRow label="Published Year">
-							{book.publishedYear ?? "-"}
-						</DetailRow>
-					</dl>
-				</CardContent>
-			</Card>
-		</div>
-	);
+	const { bookId } = Route.useParams();
+	// クライアント: SSR でキャッシュ済みのデータを即座に利用
+	const { data: book } = useSuspenseQuery(bookDetailQueryOptions(bookId));
+	return <BookDetailCard book={book} />;
 }
