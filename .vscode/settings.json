@@ -3,5 +3,7 @@
 	"css.lint.unknownAtRules": "ignore",
 	"files.associations": {
 		"*.css": "tailwindcss"
-	}
+	},
+	"editor.tabSize": 2,
+	"editor.detectIndentation": false
 }
