@@ -1,5 +1,5 @@
 ---
-description: Issue の Plan と Task 分解を生成する
+description: Issue の Plan 策定・PLAN.md 生成・実装までを行う
 argument-hint: "item=<issue-number>"
 allowed-tools:
   - Bash
@@ -22,7 +22,9 @@ allowed-tools:
 
 ## Flow
 
-### 1. Issue 情報を取得し Plan/Task を生成
+### 1. Issue 情報を取得
+
+リポジトリから指定した Issue の情報を取得する。
 
 `aidd` CLI が利用可能な場合:
 
@@ -30,15 +32,20 @@ allowed-tools:
 aidd issue plan <issue-number>
 ```
 
-これにより以下が自動生成される:
-- `features/<issue-number>/PLAN.md`
-- `features/<issue-number>/<task-number>/TASK.md`（タスクごと）
-
 ### 手動フォールバック（`aidd` 未導入時）
 
 ```bash
 gh issue view <issue-number> --json number,title,body,labels,assignees
 ```
+
+### 2. Plan Mode でプランを策定
+
+取得した Issue をもとに Plan Mode で分析し、実装方針を決定する。
+
+- Goal / Scope / Risks を整理する
+- 実装アプローチを検討する
+
+### 3. PLAN.md を生成
 
 - テンプレート: `.agent/templates/PLAN.md`
 - 出力先: `features/<issue-number>/PLAN.md`
@@ -48,20 +55,14 @@ gh issue view <issue-number> --json number,title,body,labels,assignees
 mkdir -p features/<issue-number>
 ```
 
-### 2. Task 分解
-
-- Plan Mode で Issue を分析し、実装単位に分解する
-- 各 Task に対して `features/<issue-number>/<task-number>/TASK.md` を生成
-- テンプレート: `.agent/templates/TASK.md`
-
-```bash
-mkdir -p features/<issue-number>/<task-number>
-```
-
-### 3. ブランチ名を付与
-
-- 各 TASK.md の frontmatter `branchName` に `feat/issue-<N>-task-<T>` を記入
-
 ### 4. 開発者に承認を求める
 
 - PLAN.md の内容を提示し、承認を待つ
+
+### 5. 実装
+
+承認後、PLAN.md に従って実装を進める。
+
+- `.claude/rules/coding-work.md` のルールに従う
+- `.claude/rules/frontend-patterns.md` / `frontend-structure.md` を参照する（フロントエンドの場合）
+- 実装完了後に `mise run lint` を実行する
