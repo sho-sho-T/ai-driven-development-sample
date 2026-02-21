@@ -44,26 +44,8 @@ git push -u origin <current-branch>
 
 ### 4. PR を作成
 
-`aidd` CLI が利用可能な場合:
-
 ```bash
 aidd pr create <issue-number>
-```
-
-### 手動フォールバック（`aidd` 未導入時）
-
-```bash
-gh pr create \
-  --title "[ISSUE-<issue>] <summary>" \
-  --body "## Summary
-...
-
-## Related Issue
-Closes #<issue>
-
-## Verification
-- [x] mise run lint
-- [x] bun test"
 ```
 
 ### 5. PR URL を出力

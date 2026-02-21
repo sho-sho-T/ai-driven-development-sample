@@ -26,16 +26,8 @@ allowed-tools:
 
 リポジトリから指定した Issue の情報を取得する。
 
-`aidd` CLI が利用可能な場合:
-
 ```bash
 aidd issue plan <issue-number>
-```
-
-### 手動フォールバック（`aidd` 未導入時）
-
-```bash
-gh issue view <issue-number> --json number,title,body,labels,assignees
 ```
 
 ### 2. Plan Mode でプランを策定

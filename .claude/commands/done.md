@@ -26,18 +26,8 @@ PR がマージ済みであることを確認してから続行する。
 
 ### 2. ワークツリーを削除
 
-`aidd` CLI が利用可能な場合:
-
 ```bash
 aidd wt remove <issue-number>
-```
-
-### 手動フォールバック（`aidd` 未導入時）
-
-```bash
-WT_PATH=.worktrees/issue-<issue-number>
-git worktree remove $WT_PATH --force
-git branch -d feat/issue-<issue-number>
 ```
 
 ### 3. main ブランチを最新化
