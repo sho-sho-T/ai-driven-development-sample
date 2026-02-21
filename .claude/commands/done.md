@@ -27,7 +27,7 @@ PR がマージ済みであることを確認してから続行する。
 ### 2. ワークツリーを削除
 
 ```bash
-aidd wt remove <issue-number>
+aidd wt remove issue-<issue-number>
 ```
 
 ### 3. main ブランチを最新化

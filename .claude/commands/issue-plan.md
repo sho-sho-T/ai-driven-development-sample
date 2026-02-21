@@ -27,7 +27,7 @@ allowed-tools:
 リポジトリから指定した Issue の情報を取得する。
 
 ```bash
-aidd issue plan <issue-number>
+aidd issue view <issue-number>
 ```
 
 ### 2. Plan Mode でプランを策定
