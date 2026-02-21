@@ -1,6 +1,5 @@
 ---
 description: commit・push・PR 作成までを行う
-argument-hint: "issue=<issue-number>"
 allowed-tools:
   - Bash
 ---
@@ -9,14 +8,9 @@ allowed-tools:
 
 ## Usage
 
-`/pr issue=<issue-number>`
+`/pr`
 
-## 引数の解析
-
-`$ARGUMENTS` から issue 番号を取得する。
-
-- `issue=<N>` 形式の場合: `<N>` を issue 番号として使用
-- 数値のみの場合: そのまま issue 番号として使用
+現在のワークツリーのブランチから issue 番号を自動で取得する。
 
 ## Flow
 
@@ -44,8 +38,10 @@ git push -u origin <current-branch>
 
 ### 4. PR を作成
 
+現在のブランチ名から issue 番号を解析し、PR を作成する。
+
 ```bash
-aidd pr create <issue-number>
+aidd pr create
 ```
 
 ### 5. PR URL を出力

@@ -1,6 +1,5 @@
 ---
 description: PR マージ後のワークツリー削除・main 最新化を行う
-argument-hint: "issue=<issue-number>"
 allowed-tools:
   - Bash
 ---
@@ -9,14 +8,9 @@ allowed-tools:
 
 ## Usage
 
-`/done issue=<issue-number>`
+`/done`
 
-## 引数の解析
-
-`$ARGUMENTS` から issue 番号を取得する。
-
-- `issue=<N>` 形式の場合: `<N>` を issue 番号として使用
-- 数値のみの場合: そのまま issue 番号として使用
+現在のワークツリーのブランチから issue 番号を自動で取得する。
 
 ## Flow
 
@@ -26,8 +20,10 @@ PR がマージ済みであることを確認してから続行する。
 
 ### 2. ワークツリーを削除
 
+現在のブランチ名から issue 番号を解析し、ワークツリーを削除する。
+
 ```bash
-aidd wt remove issue-<issue-number>
+aidd wt remove
 ```
 
 ### 3. main ブランチを最新化
