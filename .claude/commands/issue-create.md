@@ -1,3 +1,10 @@
+---
+description: 自然言語の指示から GitHub Issue を作成する
+argument-hint: "<自然言語での指示>"
+allowed-tools:
+  - Bash
+---
+
 # issue-create コマンド
 
 ## Usage
@@ -7,6 +14,8 @@
 ## Flow
 
 ### 1. ユーザーの指示を解析
+
+`$ARGUMENTS` をそのまま指示として解析する。
 
 - タイトル（簡潔な1行）を生成
 - 概要と受け入れ条件を抽出・整理
