@@ -1,8 +1,22 @@
+---
+description: 完了したタスクブランチから PR を作成する
+argument-hint: "issue=<issue-number> task=<task-number>"
+allowed-tools:
+  - Bash
+---
+
 # pr-create コマンド
 
 ## Usage
 
-`/pr-create <issue-number> <task-number>`
+`/pr-create issue=<issue-number> task=<task-number>`
+
+## 引数の解析
+
+`$ARGUMENTS` から issue 番号と task 番号を取得する。
+
+- `issue=<N> task=<T>` 形式: `<N>` を issue 番号、`<T>` を task 番号として使用
+- スペース区切りの数値 `<N> <T>` 形式: 1つ目を issue 番号、2つ目を task 番号として使用
 
 ## Flow
 

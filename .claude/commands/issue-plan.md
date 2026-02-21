@@ -1,8 +1,24 @@
+---
+description: Issue の Plan と Task 分解を生成する
+argument-hint: "item=<issue-number>"
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+---
+
 # issue-plan コマンド
 
 ## Usage
 
-`/issue-plan <issue-number>`
+`/issue-plan item=<issue-number>`
+
+## 引数の解析
+
+`$ARGUMENTS` から issue 番号を取得する。
+
+- `item=<N>` 形式の場合: `<N>` を issue 番号として使用
+- 数値のみの場合: そのまま issue 番号として使用
 
 ## Flow
 
