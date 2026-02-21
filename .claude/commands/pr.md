@@ -10,7 +10,16 @@ allowed-tools:
 
 `/pr`
 
-現在のワークツリーのブランチから issue 番号を自動で取得する。
+現在のブランチ名から issue 番号と task 番号を自動で取得する。
+
+## ブランチからの番号解析
+
+```bash
+git branch --show-current
+# 例: feat/issue-3-task-1 → issue=3, task=1
+```
+
+ブランチ名フォーマット: `feat/issue-{issue}-task-{task}`
 
 ## Flow
 
@@ -30,20 +39,14 @@ git add <変更ファイル>
 git commit -m "<type>(<scope>): <description>"
 ```
 
-### 3. ブランチを push
+### 3. PR を作成
+
+現在のブランチ名から解析した `<issue>` と `<task>` を使用する。
 
 ```bash
-git push -u origin <current-branch>
+aidd pr create <issue> <task>
 ```
 
-### 4. PR を作成
-
-現在のブランチ名から issue 番号を解析し、PR を作成する。
-
-```bash
-aidd pr create
-```
-
-### 5. PR URL を出力
+### 4. PR URL を出力
 
 作成した PR の URL を表示する。

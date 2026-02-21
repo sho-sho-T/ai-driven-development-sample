@@ -22,38 +22,33 @@ allowed-tools:
 
 ## Flow
 
-### 1. Issue 情報を取得
+### 1. Issue の Plan ファイルを生成
 
-リポジトリから指定した Issue の情報を取得する。
-
-```bash
-aidd issue view <issue-number>
-```
-
-### 2. Plan Mode でプランを策定
-
-取得した Issue をもとに Plan Mode で分析し、実装方針を決定する。
-
-- Goal / Scope / Risks を整理する
-- 実装アプローチを検討する
-
-### 3. PLAN.md を生成
-
-- テンプレート: `.agent/templates/PLAN.md`
-- 出力先: `features/<issue-number>/PLAN.md`
-- Issue の body を解析し、Goal / Scope / Risks を埋める
+`aidd issue plan` が GitHub Issue を取得し、PLAN.md と TASK.md を自動生成する。
 
 ```bash
-mkdir -p features/<issue-number>
+aidd issue plan <issue-number>
 ```
 
-### 4. 開発者に承認を求める
+生成される:
+- `features/<issue-number>/PLAN.md`
+- `features/<issue-number>/<task-number>/TASK.md`
 
-- PLAN.md の内容を提示し、承認を待つ
+### 2. Plan Mode でプランを確認・承認
 
-### 5. 実装
+生成された PLAN.md を読み込み、Plan Mode で内容を提示する。
 
-承認後、PLAN.md に従って実装を進める。
+- Goal / Scope / Risks を確認する
+- 実装アプローチを開発者に提示する
+- 承認を得る
+
+### 3. ワークツリーを作成して実装
+
+承認後、各タスクのワークツリーを作成する。
+
+```bash
+aidd wt ensure <issue-number> <task-number>
+```
 
 - `.claude/rules/coding-work.md` のルールに従う
 - `.claude/rules/frontend-patterns.md` / `frontend-structure.md` を参照する（フロントエンドの場合）
