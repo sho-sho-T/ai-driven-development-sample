@@ -24,7 +24,7 @@ allowed-tools:
 
 ### 1. Issue の Plan ファイルを生成
 
-`aidd issue plan` が GitHub Issue を取得し、PLAN.md と TASK.md を自動生成する。
+`aidd issue plan` が GitHub Issue を取得し、PLAN.md を自動生成する。
 
 ```bash
 aidd issue plan <issue-number>
@@ -32,7 +32,6 @@ aidd issue plan <issue-number>
 
 生成される:
 - `features/<issue-number>/PLAN.md`
-- `features/<issue-number>/<task-number>/TASK.md`
 
 ### 2. Plan Mode でプランを確認・承認
 
@@ -44,10 +43,10 @@ aidd issue plan <issue-number>
 
 ### 3. ワークツリーを作成して実装
 
-承認後、各タスクのワークツリーを作成する。
+承認後、ワークツリーを作成する。
 
 ```bash
-aidd wt ensure <issue-number> <task-number>
+aidd wt ensure <issue-number>
 ```
 
 - `.claude/rules/coding-work.md` のルールに従う

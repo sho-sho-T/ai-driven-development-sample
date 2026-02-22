@@ -8,7 +8,7 @@ use std::process;
 use anyhow::Result;
 use clap::Parser;
 
-use cli::{Cli, Commands, IssueAction, PrAction, TaskAction, WtAction};
+use cli::{Cli, Commands, IssueAction, PrAction, WtAction};
 
 fn main() {
     let cli = Cli::parse();
@@ -22,18 +22,14 @@ fn main() {
 fn run(cli: Cli) -> Result<()> {
     match cli.command {
         Commands::Wt { action } => match action {
-            WtAction::Ensure { issue, task } => commands::wt::ensure(issue, task),
-            WtAction::Remove { issue, task } => commands::wt::remove(issue, task),
+            WtAction::Ensure { issue } => commands::wt::ensure(issue),
+            WtAction::Remove { issue } => commands::wt::remove(issue),
         },
         Commands::Issue { action } => match action {
             IssueAction::Plan { issue } => commands::issue::plan(issue),
         },
-        Commands::Task { action } => match action {
-            TaskAction::Run { issue, task } => commands::task::run(issue, task),
-            TaskAction::Done { issue, task } => commands::task::done(issue, task),
-        },
         Commands::Pr { action } => match action {
-            PrAction::Create { issue, task } => commands::pr::create(issue, task),
+            PrAction::Create { issue } => commands::pr::create(issue),
         },
         Commands::Status => commands::status::show(),
     }

@@ -2,13 +2,13 @@ use std::fs;
 
 use anyhow::{Context, Result};
 
-use crate::frontmatter::{parse_plan_frontmatter, parse_task_frontmatter};
+use crate::frontmatter::parse_plan_frontmatter;
 use crate::helpers::{info, repo_root};
 
-/// Display the status of all issues and tasks.
+/// Display the status of all issues.
 ///
 /// Traverses the `features/` directory, reads frontmatter from
-/// PLAN.md and TASK.md files, and prints a formatted status overview.
+/// PLAN.md files, and prints a formatted status overview.
 pub fn show() -> Result<()> {
     info("=== AI-Driven Development Status ===");
     println!();
@@ -43,49 +43,22 @@ pub fn show() -> Result<()> {
         let issue_num = entry.file_name().to_string_lossy().to_string();
         let issue_path = entry.path();
 
-        println!("Issue #{issue_num}:");
-
         // Read PLAN.md
         let plan_path = issue_path.join("PLAN.md");
         if plan_path.exists() {
             let content = fs::read_to_string(&plan_path).unwrap_or_default();
-            let status = parse_plan_frontmatter(&content)
-                .map(|fm| fm.status)
-                .unwrap_or_else(|_| "unknown".to_string());
-            println!("  PLAN: {status}");
+            let fm = parse_plan_frontmatter(&content);
+            let status = fm.map(|f| f.status).unwrap_or_else(|_| "unknown".to_string());
+            let title = {
+                let c = fs::read_to_string(&plan_path).unwrap_or_default();
+                parse_plan_frontmatter(&c).map(|f| f.title).unwrap_or_default()
+            };
+            println!("Issue #{issue_num}: [{status}] {title}");
+        } else {
+            println!("Issue #{issue_num}: (no PLAN.md)");
         }
-
-        // Read task directories
-        let mut task_dirs: Vec<_> = fs::read_dir(&issue_path)
-            .ok()
-            .into_iter()
-            .flatten()
-            .filter_map(|e| e.ok())
-            .filter(|e| e.path().is_dir())
-            .collect();
-
-        task_dirs.sort_by_key(|e| {
-            e.file_name()
-                .to_string_lossy()
-                .parse::<u32>()
-                .unwrap_or(u32::MAX)
-        });
-
-        for task_entry in &task_dirs {
-            let task_num = task_entry.file_name().to_string_lossy().to_string();
-            let task_md = task_entry.path().join("TASK.md");
-
-            if task_md.exists() {
-                let content = fs::read_to_string(&task_md).unwrap_or_default();
-                let status = parse_task_frontmatter(&content)
-                    .map(|fm| fm.status)
-                    .unwrap_or_else(|_| "unknown".to_string());
-                println!("  Task {task_num}: {status}");
-            }
-        }
-
-        println!();
     }
 
+    println!();
     Ok(())
 }

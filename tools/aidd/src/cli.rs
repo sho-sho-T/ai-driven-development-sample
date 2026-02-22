@@ -23,17 +23,12 @@ pub enum Commands {
         #[command(subcommand)]
         action: IssueAction,
     },
-    /// Task execution
-    Task {
-        #[command(subcommand)]
-        action: TaskAction,
-    },
     /// Pull request operations
     Pr {
         #[command(subcommand)]
         action: PrAction,
     },
-    /// Show status of all issues and tasks
+    /// Show status of all issues
     Status,
 }
 
@@ -43,42 +38,20 @@ pub enum WtAction {
     Ensure {
         /// Issue number
         issue: u32,
-        /// Task number
-        task: u32,
     },
     /// Remove worktree + clean up branch
     Remove {
         /// Issue number
         issue: u32,
-        /// Task number
-        task: u32,
     },
 }
 
 #[derive(Subcommand)]
 pub enum IssueAction {
-    /// Generate PLAN.md and TASK.md files from a GitHub issue
+    /// Generate PLAN.md from a GitHub issue
     Plan {
         /// Issue number
         issue: u32,
-    },
-}
-
-#[derive(Subcommand)]
-pub enum TaskAction {
-    /// Prepare worktree and start working on a task
-    Run {
-        /// Issue number
-        issue: u32,
-        /// Task number
-        task: u32,
-    },
-    /// Lint + test + commit + push + create PR
-    Done {
-        /// Issue number
-        issue: u32,
-        /// Task number
-        task: u32,
     },
 }
 
@@ -88,7 +61,5 @@ pub enum PrAction {
     Create {
         /// Issue number
         issue: u32,
-        /// Task number
-        task: u32,
     },
 }
