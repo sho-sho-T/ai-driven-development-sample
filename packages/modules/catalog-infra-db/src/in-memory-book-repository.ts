@@ -4,10 +4,11 @@
  * Write 側の BookRepository インターフェースをインメモリ Map で実装する。
  * 本番環境では DB アクセスに差し替えるが、インターフェースは同一。
  */
-import { okAsync } from "neverthrow";
+
+import type { Book, BookRepository } from "@modules/catalog-write";
 import type { AppError } from "@shared-kernel/public";
 import type { ResultAsync } from "neverthrow";
-import type { Book, BookRepository } from "@modules/catalog-write";
+import { okAsync } from "neverthrow";
 import { bookStore } from "./store.ts";
 
 export class InMemoryBookRepository implements BookRepository {

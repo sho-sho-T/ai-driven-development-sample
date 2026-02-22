@@ -8,6 +8,7 @@ import { fileURLToPath, URL } from "url";
 import { nitro } from "nitro/vite";
 
 const config = defineConfig({
+	envDir: fileURLToPath(new URL("../../", import.meta.url)),
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),

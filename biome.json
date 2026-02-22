@@ -3,6 +3,7 @@
 	"files": {
 		"includes": [
 			"**",
+			"!.worktrees/**",
 			"!apps/web/src/routeTree.gen.ts",
 			"!apps/admin-web/src/routeTree.gen.ts",
 			"!apps/dev-console/src/routeTree.gen.ts"
