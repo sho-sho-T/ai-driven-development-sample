@@ -30,6 +30,8 @@ pub enum Commands {
     },
     /// Show status of all issues
     Status,
+    /// Deploy Supabase migrations and TanStack Start to Cloudflare Workers
+    Deploy,
 }
 
 #[derive(Subcommand)]

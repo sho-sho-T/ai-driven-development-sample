@@ -32,5 +32,6 @@ fn run(cli: Cli) -> Result<()> {
             PrAction::Create { issue } => commands::pr::create(issue),
         },
         Commands::Status => commands::status::show(),
+        Commands::Deploy => commands::deploy::run(),
     }
 }

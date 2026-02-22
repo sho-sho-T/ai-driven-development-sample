@@ -51,6 +51,25 @@ fn test_pr_help() {
 }
 
 #[test]
+fn test_deploy_help() {
+    let output = aidd_binary()
+        .args(["deploy", "--help"])
+        .output()
+        .expect("failed to run");
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Deploy"));
+}
+
+#[test]
+fn test_help_includes_deploy() {
+    let output = aidd_binary().arg("--help").output().expect("failed to run");
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("deploy"));
+}
+
+#[test]
 fn test_status_runs() {
     let output = aidd_binary()
         .arg("status")

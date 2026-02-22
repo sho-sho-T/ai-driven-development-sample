@@ -20,7 +20,7 @@ const config = defineConfig({
 				port: 42069,
 			},
 		}),
-		nitro(),
+		nitro({ preset: "cloudflare-module" }),
 		tailwindcss(),
 		// this is the plugin that enables path aliases
 		viteTsConfigPaths({
