@@ -3,19 +3,14 @@ use std::process::Command;
 
 use anyhow::{Context, Result};
 
-/// Generate the branch name for an issue/task pair.
-pub fn branch_name(issue: u32, task: u32) -> String {
-    format!("feat/issue-{issue}-task-{task}")
+/// Generate the branch name for an issue.
+pub fn branch_name(issue: u32) -> String {
+    format!("feat/issue-{issue}")
 }
 
-/// Generate the worktree path for an issue/task pair.
-pub fn worktree_path(issue: u32, task: u32) -> PathBuf {
-    repo_root().join(format!(".worktrees/issue-{issue}-task-{task}"))
-}
-
-/// Generate the TASK.md path for an issue/task pair.
-pub fn task_file(issue: u32, task: u32) -> PathBuf {
-    repo_root().join(format!("features/{issue}/{task}/TASK.md"))
+/// Generate the worktree path for an issue.
+pub fn worktree_path(issue: u32) -> PathBuf {
+    repo_root().join(format!(".worktrees/issue-{issue}"))
 }
 
 /// Generate the PLAN.md path for an issue.
@@ -26,11 +21,6 @@ pub fn plan_file(issue: u32) -> PathBuf {
 /// Generate the features directory path for an issue.
 pub fn features_dir(issue: u32) -> PathBuf {
     repo_root().join(format!("features/{issue}"))
-}
-
-/// Generate the task directory path for an issue/task pair.
-pub fn task_dir(issue: u32, task: u32) -> PathBuf {
-    repo_root().join(format!("features/{issue}/{task}"))
 }
 
 /// Get the repository root directory.
@@ -134,12 +124,12 @@ pub struct SupabasePorts {
     pub inspector: u32,
 }
 
-/// Calculate Supabase ports for a given issue/task pair.
+/// Calculate Supabase ports for a given issue.
 ///
-/// Each worktree gets a unique offset (`issue * 100 + task * 10`) applied
+/// Each worktree gets a unique offset (`issue * 100`) applied
 /// to the default Supabase ports so that multiple instances can run in parallel.
-pub fn supabase_ports(issue: u32, task: u32) -> SupabasePorts {
-    let offset = issue * 100 + task * 10;
+pub fn supabase_ports(issue: u32) -> SupabasePorts {
+    let offset = issue * 100;
     SupabasePorts {
         api: 54321 + offset,
         db: 54322 + offset,
@@ -152,9 +142,9 @@ pub fn supabase_ports(issue: u32, task: u32) -> SupabasePorts {
     }
 }
 
-/// Generate the Supabase project_id for a given issue/task pair.
-pub fn supabase_project_id(issue: u32, task: u32) -> String {
-    format!("ai-driven-development-sample-i{issue}-t{task}")
+/// Generate the Supabase project_id for a given issue.
+pub fn supabase_project_id(issue: u32) -> String {
+    format!("ai-driven-development-sample-i{issue}")
 }
 
 #[cfg(test)]
@@ -163,20 +153,14 @@ mod tests {
 
     #[test]
     fn test_branch_name() {
-        assert_eq!(branch_name(1, 2), "feat/issue-1-task-2");
-        assert_eq!(branch_name(42, 7), "feat/issue-42-task-7");
+        assert_eq!(branch_name(1), "feat/issue-1");
+        assert_eq!(branch_name(42), "feat/issue-42");
     }
 
     #[test]
     fn test_worktree_path_ends_correctly() {
-        let path = worktree_path(3, 5);
-        assert!(path.ends_with(".worktrees/issue-3-task-5"));
-    }
-
-    #[test]
-    fn test_task_file_path() {
-        let path = task_file(1, 3);
-        assert!(path.ends_with("features/1/3/TASK.md"));
+        let path = worktree_path(3);
+        assert!(path.ends_with(".worktrees/issue-3"));
     }
 
     #[test]
@@ -192,48 +176,42 @@ mod tests {
     }
 
     #[test]
-    fn test_task_dir_path() {
-        let path = task_dir(1, 2);
-        assert!(path.ends_with("features/1/2"));
+    fn test_supabase_ports_issue1() {
+        let ports = supabase_ports(1);
+        // offset = 1*100 = 100
+        assert_eq!(ports.api, 54421);
+        assert_eq!(ports.db, 54422);
+        assert_eq!(ports.shadow, 54420);
+        assert_eq!(ports.studio, 54423);
+        assert_eq!(ports.inbucket, 54424);
+        assert_eq!(ports.analytics, 54427);
+        assert_eq!(ports.pooler, 54429);
+        assert_eq!(ports.inspector, 8183);
     }
 
     #[test]
-    fn test_supabase_ports_issue1_task1() {
-        let ports = supabase_ports(1, 1);
-        // offset = 1*100 + 1*10 = 110
-        assert_eq!(ports.api, 54431);
-        assert_eq!(ports.db, 54432);
-        assert_eq!(ports.shadow, 54430);
-        assert_eq!(ports.studio, 54433);
-        assert_eq!(ports.inbucket, 54434);
-        assert_eq!(ports.analytics, 54437);
-        assert_eq!(ports.pooler, 54439);
-        assert_eq!(ports.inspector, 8193);
-    }
-
-    #[test]
-    fn test_supabase_ports_issue2_task3() {
-        let ports = supabase_ports(2, 3);
-        // offset = 2*100 + 3*10 = 230
-        assert_eq!(ports.api, 54551);
-        assert_eq!(ports.db, 54552);
-        assert_eq!(ports.shadow, 54550);
-        assert_eq!(ports.studio, 54553);
-        assert_eq!(ports.inbucket, 54554);
-        assert_eq!(ports.analytics, 54557);
-        assert_eq!(ports.pooler, 54559);
-        assert_eq!(ports.inspector, 8313);
+    fn test_supabase_ports_issue2() {
+        let ports = supabase_ports(2);
+        // offset = 2*100 = 200
+        assert_eq!(ports.api, 54521);
+        assert_eq!(ports.db, 54522);
+        assert_eq!(ports.shadow, 54520);
+        assert_eq!(ports.studio, 54523);
+        assert_eq!(ports.inbucket, 54524);
+        assert_eq!(ports.analytics, 54527);
+        assert_eq!(ports.pooler, 54529);
+        assert_eq!(ports.inspector, 8283);
     }
 
     #[test]
     fn test_supabase_project_id() {
         assert_eq!(
-            supabase_project_id(1, 1),
-            "ai-driven-development-sample-i1-t1"
+            supabase_project_id(1),
+            "ai-driven-development-sample-i1"
         );
         assert_eq!(
-            supabase_project_id(42, 7),
-            "ai-driven-development-sample-i42-t7"
+            supabase_project_id(42),
+            "ai-driven-development-sample-i42"
         );
     }
 }

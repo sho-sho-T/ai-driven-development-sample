@@ -12,7 +12,6 @@ fn test_help_output() {
     assert!(stdout.contains("AI-Driven Development CLI"));
     assert!(stdout.contains("wt"));
     assert!(stdout.contains("issue"));
-    assert!(stdout.contains("task"));
     assert!(stdout.contains("pr"));
     assert!(stdout.contains("status"));
 }
@@ -27,18 +26,6 @@ fn test_wt_help() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("ensure"));
     assert!(stdout.contains("remove"));
-}
-
-#[test]
-fn test_task_help() {
-    let output = aidd_binary()
-        .args(["task", "--help"])
-        .output()
-        .expect("failed to run");
-    assert!(output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("run"));
-    assert!(stdout.contains("done"));
 }
 
 #[test]
@@ -64,12 +51,30 @@ fn test_pr_help() {
 }
 
 #[test]
+fn test_deploy_help() {
+    let output = aidd_binary()
+        .args(["deploy", "--help"])
+        .output()
+        .expect("failed to run");
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Deploy"));
+}
+
+#[test]
+fn test_help_includes_deploy() {
+    let output = aidd_binary().arg("--help").output().expect("failed to run");
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("deploy"));
+}
+
+#[test]
 fn test_status_runs() {
     let output = aidd_binary()
         .arg("status")
         .output()
         .expect("failed to run");
-    // Status should succeed (reads features/ dir)
     assert!(output.status.success());
 }
 

@@ -5,6 +5,9 @@ node = "22"
 gh = "latest"
 rust = "latest"
 
+[env]
+_.file = ".env"
+
 [tasks.dev]
 description = "Start TanStack Start dev server"
 run = "cd apps/web && bun run dev"
@@ -37,12 +40,16 @@ run = "bun run format"
 
 [tasks.db]
 description = "Start Supabase services"
-run = "supabase start"
+run = "supabase --workdir packages/platform/supabase start"
 
 [tasks."db:stop"]
 description = "Stop Supabase services"
-run = "supabase stop"
+run = "supabase --workdir packages/platform/supabase stop"
 
 [tasks."db:reset"]
 description = "Reset database (re-apply migrations)"
-run = "supabase db reset"
+run = "supabase --workdir packages/platform/supabase db reset"
+
+[tasks."db:push"]
+description = "Push migrations to Supabase Cloud"
+run = "supabase --workdir packages/platform/supabase db push"

@@ -10,16 +10,16 @@ allowed-tools:
 
 `/done`
 
-現在のブランチ名から issue 番号と task 番号を自動で取得する。
+現在のブランチ名から issue 番号を自動で取得する。
 
 ## ブランチからの番号解析
 
 ```bash
 git branch --show-current
-# 例: feat/issue-3-task-1 → issue=3, task=1
+# 例: feat/issue-3 → issue=3
 ```
 
-ブランチ名フォーマット: `feat/issue-{issue}-task-{task}`
+ブランチ名フォーマット: `feat/issue-{issue}`
 
 ## Flow
 
@@ -29,10 +29,10 @@ PR がマージ済みであることを確認してから続行する。
 
 ### 2. ワークツリーを削除
 
-現在のブランチ名から解析した `<issue>` と `<task>` を使用する。
+現在のブランチ名から解析した `<issue>` を使用する。
 
 ```bash
-aidd wt remove <issue> <task>
+aidd wt remove <issue>
 ```
 
 ### 3. main ブランチを最新化
@@ -44,7 +44,7 @@ git pull origin main
 
 ### 4. 完了を報告
 
-次のタスクを開始するには `/issue-plan item=<next-issue-number>` を実行してください。
+次の Issue を開始するには `/issue-plan item=<next-issue-number>` を実行してください。
 
 ---
 

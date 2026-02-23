@@ -12,6 +12,7 @@
 		"@contracts/catalog-public": "workspace:*",
 		"@contracts/catalog-server": "workspace:*",
 		"@modules/catalog-write": "workspace:*",
-		"@modules/catalog-read": "workspace:*"
+		"@modules/catalog-read": "workspace:*",
+		"@supabase/supabase-js": "^2.49.1"
 	}
 }

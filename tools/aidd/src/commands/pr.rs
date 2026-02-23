@@ -3,9 +3,9 @@ use anyhow::{Context, Result};
 use crate::helpers::{branch_name, info, run_command_in, worktree_path};
 
 /// Push branch and create a pull request.
-pub fn create(issue: u32, task: u32) -> Result<()> {
-    let branch = branch_name(issue, task);
-    let wt_path = worktree_path(issue, task);
+pub fn create(issue: u32) -> Result<()> {
+    let branch = branch_name(issue);
+    let wt_path = worktree_path(issue);
 
     let work_dir = if wt_path.exists() {
         wt_path
@@ -25,7 +25,7 @@ pub fn create(issue: u32, task: u32) -> Result<()> {
     let commit_body = run_command_in("git", &["log", "-1", "--format=%b"], Some(&work_dir))
         .unwrap_or_default();
 
-    let pr_title = format!("[TASK-{issue}-{task}] {commit_summary}");
+    let pr_title = format!("[ISSUE-{issue}] {commit_summary}");
     let pr_body = format!(
         "## Summary\n{commit_body}\n\n## Related Issue\nCloses #{issue}"
     );

@@ -3,7 +3,7 @@ use std::fs;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
-use crate::helpers::{features_dir, info, plan_file, repo_root, run_command, task_dir};
+use crate::helpers::{features_dir, info, plan_file, repo_root, run_command};
 
 #[derive(Debug, Deserialize)]
 struct GhIssue {
@@ -13,10 +13,10 @@ struct GhIssue {
     body: Option<String>,
 }
 
-/// Generate PLAN.md and TASK.md files from a GitHub issue.
+/// Generate PLAN.md from a GitHub issue.
 ///
 /// Fetches the issue via `gh issue view`, extracts task items from
-/// checkboxes in the body, and generates feature files from templates.
+/// checkboxes in the body, and generates a PLAN.md from a template.
 pub fn plan(issue: u32) -> Result<()> {
     info(&format!("Fetching issue #{issue}..."));
 
@@ -35,14 +35,10 @@ pub fn plan(issue: u32) -> Result<()> {
     let body = gh_issue.body.unwrap_or_default();
     let tasks = extract_tasks(&body);
 
-    if tasks.is_empty() {
-        anyhow::bail!(
-            "No task items found in issue #{issue} body. \
-             Add checklist items (- [ ] ...) to the issue body."
-        );
-    }
-
-    info(&format!("Found {} tasks in issue #{issue}", tasks.len()));
+    info(&format!(
+        "Found {} task items in issue #{issue}",
+        tasks.len()
+    ));
 
     // Create features directory
     let feat_dir = features_dir(issue);
@@ -55,25 +51,6 @@ pub fn plan(issue: u32) -> Result<()> {
     fs::write(&pf, plan_content)
         .with_context(|| format!("Failed to write {}", pf.display()))?;
     info(&format!("Generated: {}", pf.display()));
-
-    // Generate TASK.md for each task
-    for (i, task_desc) in tasks.iter().enumerate() {
-        let task_num = (i + 1) as u32;
-        let td = task_dir(issue, task_num);
-        fs::create_dir_all(&td)
-            .with_context(|| format!("Failed to create {}", td.display()))?;
-
-        let task_content = generate_task(issue, task_num, task_desc);
-        let tf = td.join("TASK.md");
-        fs::write(&tf, task_content)
-            .with_context(|| format!("Failed to write {}", tf.display()))?;
-        info(&format!("Generated: {}", tf.display()));
-    }
-
-    info(&format!(
-        "Plan generated: {} tasks for issue #{issue}",
-        tasks.len()
-    ));
 
     Ok(())
 }
@@ -107,10 +84,16 @@ fn generate_plan(title: &str, issue: u32, tasks: &[String]) -> String {
     for (i, desc) in tasks.iter().enumerate() {
         let num = i + 1;
         let estimate = if desc.len() > 50 { "M" } else { "S" };
-        task_table.push_str(&format!(
-            "| {num} | {desc} | feat/issue-{issue}-task-{num} | {estimate} |\n"
-        ));
+        task_table.push_str(&format!("| {num} | {desc} | {estimate} |\n"));
     }
+
+    let task_section = if task_table.is_empty() {
+        String::new()
+    } else {
+        format!(
+            "# Task Breakdown\n| # | タスク概要 | 見積 |\n|---|-----------|------|\n{task_table}\n"
+        )
+    };
 
     format!(
         r#"---
@@ -125,60 +108,22 @@ createdAt: {now}
 {title}
 
 # Scope
-See individual task definitions in `features/{issue}/*/TASK.md`.
+Issue #{issue} の実装スコープ。
 
-# Task Breakdown
-| # | タスク概要 | ブランチ名 | 見積 |
-|---|-----------|-----------|------|
-{task_table}
-# Risks
+{task_section}# Risks
 <!-- 実装上のリスクと対策 -->
 
 # Definition of Done
-- [ ] すべての Task が done
 - [ ] lint/test パス
 - [ ] PR レビュー済み
 "#
     )
 }
 
-/// Generate TASK.md content for a single task.
-fn generate_task(issue: u32, task: u32, description: &str) -> String {
-    format!(
-        r#"---
-issueNumber: {issue}
-taskNumber: {task}
-status: todo
-branchName: feat/issue-{issue}-task-{task}
-worktreePath: .worktrees/issue-{issue}-task-{task}
----
-
-# Context
-{description}
-
-# Implementation Steps
-1. Analyze requirements from the task description
-2. Implement the changes
-3. Add tests where applicable
-
-# Files to Change
-- TBD (to be determined during implementation)
-
-# Verification
-- [ ] `mise run lint` パス
-- [ ] `bun test` パス（該当テストがある場合）
-- [ ] 手動確認項目（該当する場合）
-
-# Commit Plan
-- `feat(issue-{issue}): task {task} - {description}`
-"#
-    )
-}
-
 /// Simple ISO-8601 timestamp without external crates.
 fn chrono_like_now() -> String {
-    // Use the `date` command as a simple approach
-    run_command("date", &["-u", "+%Y-%m-%dT%H:%M:%SZ"]).unwrap_or_else(|_| "1970-01-01T00:00:00Z".to_string())
+    run_command("date", &["-u", "+%Y-%m-%dT%H:%M:%SZ"])
+        .unwrap_or_else(|_| "1970-01-01T00:00:00Z".to_string())
 }
 
 #[cfg(test)]
@@ -211,11 +156,18 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_task_content() {
-        let content = generate_task(1, 2, "Implement feature X");
+    fn test_generate_plan_with_tasks() {
+        let content = generate_plan("My Feature", 1, &["Task A".to_string(), "Task B".to_string()]);
         assert!(content.contains("issueNumber: 1"));
-        assert!(content.contains("taskNumber: 2"));
-        assert!(content.contains("status: todo"));
-        assert!(content.contains("Implement feature X"));
+        assert!(content.contains("My Feature"));
+        assert!(content.contains("Task A"));
+        assert!(content.contains("Task B"));
+    }
+
+    #[test]
+    fn test_generate_plan_without_tasks() {
+        let content = generate_plan("My Feature", 2, &[]);
+        assert!(content.contains("issueNumber: 2"));
+        assert!(!content.contains("Task Breakdown"));
     }
 }

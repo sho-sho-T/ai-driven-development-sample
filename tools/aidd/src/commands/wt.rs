@@ -7,14 +7,14 @@ use crate::helpers::{
     supabase_project_id, warn, worktree_path,
 };
 
-/// Create a worktree for the given issue/task pair (idempotent).
+/// Create a worktree for the given issue (idempotent).
 ///
 /// If the worktree already exists, prints its path and returns.
 /// Otherwise, creates the branch and worktree, installs dependencies,
 /// and copies `.env` if present.
-pub fn ensure(issue: u32, task: u32) -> Result<()> {
-    let branch = branch_name(issue, task);
-    let wt_path = worktree_path(issue, task);
+pub fn ensure(issue: u32) -> Result<()> {
+    let branch = branch_name(issue);
+    let wt_path = worktree_path(issue);
     let root = repo_root();
 
     // Already exists?
@@ -76,11 +76,11 @@ pub fn ensure(issue: u32, task: u32) -> Result<()> {
     }
 
     // Patch supabase/config.toml for isolated Supabase instance
-    let config_path = wt_path.join("supabase/config.toml");
+    let config_path = wt_path.join("packages/platform/supabase/config.toml");
     if config_path.exists() {
         info("Patching supabase/config.toml for isolated instance...");
-        let ports = supabase_ports(issue, task);
-        let project_id = supabase_project_id(issue, task);
+        let ports = supabase_ports(issue);
+        let project_id = supabase_project_id(issue);
 
         let config = fs::read_to_string(&config_path)
             .context("Failed to read supabase/config.toml")?;
@@ -104,18 +104,30 @@ pub fn ensure(issue: u32, task: u32) -> Result<()> {
 
         // Start Supabase
         info("Starting Supabase...");
-        run_command_inherit("supabase", &["start"], Some(&wt_path))
-            .context("Failed to start Supabase")?;
+        run_command_inherit(
+            "supabase",
+            &["--workdir", "packages/platform/supabase", "start"],
+            Some(&wt_path),
+        )
+        .context("Failed to start Supabase")?;
 
         // Reset DB (runs migrations + seeds)
         info("Resetting Supabase database (migrations + seed)...");
-        run_command_inherit("supabase", &["db", "reset"], Some(&wt_path))
-            .context("Failed to reset Supabase database")?;
+        run_command_inherit(
+            "supabase",
+            &["--workdir", "packages/platform/supabase", "db", "reset"],
+            Some(&wt_path),
+        )
+        .context("Failed to reset Supabase database")?;
 
         // Extract anon key from supabase status
         info("Extracting Supabase anon key...");
-        let status_output = run_command_in("supabase", &["status", "-o", "env"], Some(&wt_path))
-            .unwrap_or_default();
+        let status_output = run_command_in(
+            "supabase",
+            &["--workdir", "packages/platform/supabase", "status", "-o", "env"],
+            Some(&wt_path),
+        )
+        .unwrap_or_default();
 
         let anon_key = status_output
             .lines()
@@ -149,17 +161,21 @@ pub fn ensure(issue: u32, task: u32) -> Result<()> {
 }
 
 /// Remove a worktree and clean up its branch.
-pub fn remove(issue: u32, task: u32) -> Result<()> {
-    let branch = branch_name(issue, task);
-    let wt_path = worktree_path(issue, task);
+pub fn remove(issue: u32) -> Result<()> {
+    let branch = branch_name(issue);
+    let wt_path = worktree_path(issue);
     let root = repo_root();
 
     if wt_path.exists() {
         // Stop Supabase if config exists
-        let config_path = wt_path.join("supabase/config.toml");
+        let config_path = wt_path.join("packages/platform/supabase/config.toml");
         if config_path.exists() {
             info("Stopping Supabase...");
-            if let Err(e) = run_command_in("supabase", &["stop"], Some(&wt_path)) {
+            if let Err(e) = run_command_in(
+                "supabase",
+                &["--workdir", "packages/platform/supabase", "stop"],
+                Some(&wt_path),
+            ) {
                 warn(&format!("Failed to stop Supabase: {e}"));
             }
         }

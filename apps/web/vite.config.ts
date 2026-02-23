@@ -8,6 +8,7 @@ import { fileURLToPath, URL } from "url";
 import { nitro } from "nitro/vite";
 
 const config = defineConfig({
+	envDir: fileURLToPath(new URL("../../", import.meta.url)),
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -19,7 +20,7 @@ const config = defineConfig({
 				port: 42069,
 			},
 		}),
-		nitro(),
+		nitro({ preset: "cloudflare-module" }),
 		tailwindcss(),
 		// this is the plugin that enables path aliases
 		viteTsConfigPaths({
