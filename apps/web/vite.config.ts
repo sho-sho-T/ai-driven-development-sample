@@ -1,11 +1,11 @@
-import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import viteReact from "@vitejs/plugin-react";
-import viteTsConfigPaths from "vite-tsconfig-paths";
-import tailwindcss from "@tailwindcss/vite";
-import { fileURLToPath, URL } from "url";
+import react from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
+import { fileURLToPath, URL } from "url";
+import { defineConfig } from "vite";
+import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
 	envDir: fileURLToPath(new URL("../../", import.meta.url)),
@@ -20,15 +20,12 @@ const config = defineConfig({
 				port: 42069,
 			},
 		}),
-		nitro({ preset: "cloudflare-module" }),
-		tailwindcss(),
-		// this is the plugin that enables path aliases
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],
 		}),
-
+		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		tanstackStart(),
-		viteReact(),
+		react(),
 	],
 });
 

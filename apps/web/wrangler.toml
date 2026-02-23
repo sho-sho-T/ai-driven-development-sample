@@ -1,7 +1,22 @@
 name = "sample"
-main = ".output/server/index.mjs"
+main = "@tanstack/react-start/server-entry"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
+
 [vars]
-# Secrets are set via: bunx wrangler secret put SUPABASE_URL
+# Secrets are set via: bunx wrangler secret put DATABASE_URL
