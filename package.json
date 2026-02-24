@@ -9,7 +9,8 @@
 		"apps/*",
 		"packages/shared-kernel/*",
 		"packages/contracts/*",
-		"packages/modules/*"
+		"packages/modules/*",
+		"packages/platform/*"
 	],
 	"dependencies": {
 		"@cloudflare/vite-plugin": "^1.25.4",
