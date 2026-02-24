@@ -53,3 +53,15 @@ run = "supabase --workdir packages/platform/supabase db reset"
 [tasks."db:push"]
 description = "Push migrations to Supabase Cloud"
 run = "supabase --workdir packages/platform/supabase db push"
+
+[tasks."deploy:prod"]
+description = "Deploy Supabase migrations and TanStack Start app to Cloudflare Workers"
+run = """
+echo "[1/3] Pushing database migrations to Supabase Cloud..."
+supabase --workdir packages/platform/supabase db push
+echo "[2/3] Building TanStack Start app..."
+cd apps/web && bun run build
+echo "[3/3] Deploying to Cloudflare Workers..."
+bunx wrangler deploy
+echo "Deploy complete."
+"""
