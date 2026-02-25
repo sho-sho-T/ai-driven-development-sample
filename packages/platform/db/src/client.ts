@@ -23,6 +23,9 @@ export function getDb(): Db {
 		throw new Error("Missing required environment variable: DATABASE_URL");
 	}
 
-	const client = postgres(databaseUrl, { max: 1 });
+	const client = postgres(databaseUrl, {
+		max: 1,
+		prepare: false, // ← Cloudflare Workers + pooler では必須
+	});
 	return drizzle(client, { schema });
 }
