@@ -9,7 +9,8 @@
 		"test": "vitest run",
 		"lint": "biome lint .",
 		"format": "biome format --write .",
-		"deploy": "wrangler deploy"
+		"deploy": "wrangler deploy",
+		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
 		"@contracts/catalog-public": "workspace:*",
