@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Event Storming" id="es">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="1800">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- LEGEND -->
+        <mxCell id="leg" value="凡例" style="swimlane;startSize=25;fillColor=#FFFFFF;strokeColor=#999;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="1200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg1" value="Domain Event" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;fontStyle=1;" vertex="1" parent="leg">
+          <mxGeometry x="15" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg2" value="Command" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;fontStyle=1;" vertex="1" parent="leg">
+          <mxGeometry x="150" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg3" value="Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=10;fontStyle=1;" vertex="1" parent="leg">
+          <mxGeometry x="285" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg4" value="Policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=10;fontStyle=1;" vertex="1" parent="leg">
+          <mxGeometry x="420" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg5" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=10;fontStyle=2;" vertex="1" parent="leg">
+          <mxGeometry x="555" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg6" value="Business Rule" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=10;fontStyle=1;dashed=1;" vertex="1" parent="leg">
+          <mxGeometry x="690" y="35" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg7" value="Read Model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#1B5E20;fontSize=10;fontStyle=1;" vertex="1" parent="leg">
+          <mxGeometry x="835" y="35" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg8" value="External Event" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;fontStyle=1;dashed=1;" vertex="1" parent="leg">
+          <mxGeometry x="970" y="35" width="130" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== LIBRARY CONTEXT ==================== -->
+        <mxCell id="s_lib" value="library コンテキスト（図書館管理）" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666;fontSize=13;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="110" width="1200" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="lib_a1" value="System Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lib">
+          <mxGeometry x="20" y="47" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lib_c1" value="&lt;b&gt;RegisterLibrary&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;name, location&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lib">
+          <mxGeometry x="135" y="42" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lib_g1" value="&lt;b&gt;Library&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lib">
+          <mxGeometry x="340" y="42" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lib_e1" value="&lt;b&gt;LibraryRegistered&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;libraryId, name&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lib">
+          <mxGeometry x="510" y="42" width="180" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lib_p1" value="各コンテキストが&lt;br&gt;テナントとして認識&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;catalog / lending / member&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_lib">
+          <mxGeometry x="740" y="37" width="185" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_lib1" style="rounded=1;strokeColor=#999;" edge="1" source="lib_a1" target="lib_c1" parent="s_lib"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_lib2" style="rounded=1;strokeColor=#999;" edge="1" source="lib_c1" target="lib_g1" parent="s_lib"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_lib3" style="rounded=1;strokeColor=#999;" edge="1" source="lib_g1" target="lib_e1" parent="s_lib"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_lib4" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="lib_e1" target="lib_p1" parent="s_lib"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- ==================== CATALOG CONTEXT ==================== -->
+        <mxCell id="s_cat" value="catalog コンテキスト（書籍管理）" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666;fontSize=13;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="260" width="1200" height="470" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 1: RegisterBookInfo -->
+        <mxCell id="cat_a1" value="Librarian" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_cat">
+          <mxGeometry x="20" y="52" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_c1" value="&lt;b&gt;RegisterBookInfo&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;isbn, title, author,&lt;br&gt;publisher, publishedYear&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="42" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_r1" value="ISBN一意 / タイトル・著者必須" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=8;dashed=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="112" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_g1" value="&lt;b&gt;BookInfo&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="340" y="47" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_e1" value="&lt;b&gt;BookInfoRegistered&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookInfoId, isbn,&lt;br&gt;title, author, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="510" y="42" width="190" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 2: RegisterBookCopy -->
+        <mxCell id="cat_a2" value="Librarian" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_cat">
+          <mxGeometry x="20" y="162" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_c2" value="&lt;b&gt;RegisterBookCopy&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookInfoId, barcode,&lt;br&gt;libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="152" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_r2" value="バーコード一意 / 書籍情報が存在" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=8;dashed=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="222" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_g2" value="&lt;b&gt;BookCopy&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="340" y="157" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_e2" value="&lt;b&gt;BookCopyRegistered&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId, bookInfoId,&lt;br&gt;barcode, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="510" y="152" width="190" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_p2" value="lending が貸出可能な&lt;br&gt;書籍実体として認識" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_cat">
+          <mxGeometry x="750" y="157" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 3: RegisterP2PBookCopy -->
+        <mxCell id="cat_a3" value="Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_cat">
+          <mxGeometry x="20" y="272" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_rm3" value="P2P書籍登録画面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#1B5E20;fontSize=8;" vertex="1" parent="s_cat">
+          <mxGeometry x="17" y="325" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_c3" value="&lt;b&gt;RegisterP2PBookCopy&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;isbn, barcode,&lt;br&gt;ownerId, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="262" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_r3" value="バーコード一意 / ISBN対応BookInfo存在" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=7;dashed=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="135" y="332" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_g3" value="&lt;b&gt;BookCopy&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="340" y="267" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_e3" value="&lt;b&gt;P2PBookCopyRegistered&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId, bookInfoId,&lt;br&gt;barcode, ownerId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="510" y="262" width="190" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_p3" value="lending が P2P 貸出可能な&lt;br&gt;書籍として認識" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_cat">
+          <mxGeometry x="750" y="267" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 4: Event sync from lending -->
+        <mxCell id="cat_ext1" value="&lt;b&gt;BookBorrowed&lt;/b&gt;&lt;br&gt;&lt;b&gt;BookReturned&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;(from lending)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;dashed=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="20" y="385" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_p4" value="書籍実体の&lt;br&gt;貸出状態を同期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_cat">
+          <mxGeometry x="240" y="385" width="150" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_c4" value="&lt;b&gt;ChangeBookCopyStatus&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="440" y="385" width="160" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_g4" value="&lt;b&gt;BookCopy&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_cat">
+          <mxGeometry x="650" y="385" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="cat_e4" value="&lt;b&gt;BookCopyStatusChanged&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId, status&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_cat">
+          <mxGeometry x="820" y="385" width="180" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Catalog edges -->
+        <mxCell id="e_c11" style="rounded=1;strokeColor=#999;" edge="1" source="cat_a1" target="cat_c1" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c12" style="rounded=1;strokeColor=#999;" edge="1" source="cat_c1" target="cat_g1" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c13" style="rounded=1;strokeColor=#999;" edge="1" source="cat_g1" target="cat_e1" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c21" style="rounded=1;strokeColor=#999;" edge="1" source="cat_a2" target="cat_c2" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c22" style="rounded=1;strokeColor=#999;" edge="1" source="cat_c2" target="cat_g2" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c23" style="rounded=1;strokeColor=#999;" edge="1" source="cat_g2" target="cat_e2" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c24" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="cat_e2" target="cat_p2" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c31" style="rounded=1;strokeColor=#999;" edge="1" source="cat_a3" target="cat_c3" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c32" style="rounded=1;strokeColor=#999;" edge="1" source="cat_c3" target="cat_g3" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c33" style="rounded=1;strokeColor=#999;" edge="1" source="cat_g3" target="cat_e3" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c34" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="cat_e3" target="cat_p3" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c41" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="cat_ext1" target="cat_p4" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c42" style="rounded=1;strokeColor=#999;" edge="1" source="cat_p4" target="cat_c4" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c43" style="rounded=1;strokeColor=#999;" edge="1" source="cat_c4" target="cat_g4" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_c44" style="rounded=1;strokeColor=#999;" edge="1" source="cat_g4" target="cat_e4" parent="s_cat"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- ==================== MEMBER CONTEXT ==================== -->
+        <mxCell id="s_mem" value="member コンテキスト（利用者管理）" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666;fontSize=13;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="760" width="1200" height="250" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 1: RegisterMember -->
+        <mxCell id="mem_a1" value="Librarian" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_mem">
+          <mxGeometry x="20" y="52" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_c1" value="&lt;b&gt;RegisterMember&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;name, email, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_mem">
+          <mxGeometry x="135" y="42" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_r1" value="名前必須 / メールアドレス一意" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=8;dashed=1;" vertex="1" parent="s_mem">
+          <mxGeometry x="135" y="112" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_g1" value="&lt;b&gt;Member&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_mem">
+          <mxGeometry x="340" y="47" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_e1" value="&lt;b&gt;MemberRegistered&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;memberId, name,&lt;br&gt;email, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_mem">
+          <mxGeometry x="510" y="42" width="190" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_p1" value="lending が貸出可能な&lt;br&gt;利用者として認識" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_mem">
+          <mxGeometry x="750" y="47" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 2: DeleteMember -->
+        <mxCell id="mem_a2" value="Librarian" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_mem">
+          <mxGeometry x="20" y="165" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_c2" value="&lt;b&gt;DeleteMember&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;memberId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_mem">
+          <mxGeometry x="135" y="160" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_r2" value="貸出中の書籍がある場合は削除不可" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=7;dashed=1;" vertex="1" parent="s_mem">
+          <mxGeometry x="310" y="172" width="175" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_g2" value="&lt;b&gt;Member&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_mem">
+          <mxGeometry x="510" y="160" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="mem_e2" value="&lt;b&gt;MemberDeleted&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;memberId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_mem">
+          <mxGeometry x="680" y="160" width="170" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Member edges -->
+        <mxCell id="e_m11" style="rounded=1;strokeColor=#999;" edge="1" source="mem_a1" target="mem_c1" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m12" style="rounded=1;strokeColor=#999;" edge="1" source="mem_c1" target="mem_g1" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m13" style="rounded=1;strokeColor=#999;" edge="1" source="mem_g1" target="mem_e1" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m14" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="mem_e1" target="mem_p1" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m21" style="rounded=1;strokeColor=#999;" edge="1" source="mem_a2" target="mem_c2" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m22" style="rounded=1;strokeColor=#999;" edge="1" source="mem_c2" target="mem_g2" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_m23" style="rounded=1;strokeColor=#999;" edge="1" source="mem_g2" target="mem_e2" parent="s_mem"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- ==================== LENDING CONTEXT ==================== -->
+        <mxCell id="s_lend" value="lending コンテキスト（貸出管理）" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666;fontSize=13;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1040" width="1200" height="660" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 1: BorrowBook -->
+        <mxCell id="lend_a1" value="Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="52" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_rm1" value="書籍借用画面&lt;br&gt;(バーコードスキャン)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#1B5E20;fontSize=7;" vertex="1" parent="s_lend">
+          <mxGeometry x="15" y="107" width="85" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c1" value="&lt;b&gt;BorrowBook&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId (barcode),&lt;br&gt;memberId, libraryId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="42" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_r1" value="貸出上限5冊 / 延滞中は不可 / 重複不可" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=7;dashed=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="112" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g1" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="47" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e1" value="&lt;b&gt;BookBorrowed&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, bookCopyId,&lt;br&gt;memberId, dueDate(+14日)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="42" width="200" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_p1" value="catalog BookCopy&lt;br&gt;状態を onLoan に同期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_lend">
+          <mxGeometry x="760" y="47" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 2: ReturnBook -->
+        <mxCell id="lend_a2" value="Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="167" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_rm2" value="書籍返却画面&lt;br&gt;(バーコードスキャン)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#1B5E20;fontSize=7;" vertex="1" parent="s_lend">
+          <mxGeometry x="15" y="222" width="85" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c2" value="&lt;b&gt;ReturnBook&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId (barcode)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="162" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g2" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="162" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e2" value="&lt;b&gt;BookReturned&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, bookCopyId,&lt;br&gt;memberId, returnedAt&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="157" width="200" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_p2" value="catalog BookCopy&lt;br&gt;状態を available に同期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_lend">
+          <mxGeometry x="760" y="162" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 3: ExtendLoan -->
+        <mxCell id="lend_a3" value="Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="282" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_rm3" value="マイページ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#1B5E20;fontSize=8;" vertex="1" parent="s_lend">
+          <mxGeometry x="25" y="337" width="65" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c3" value="&lt;b&gt;ExtendLoan&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="277" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_r3" value="延長は1回のみ / +7日間" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=8;dashed=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="337" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g3" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="277" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e3" value="&lt;b&gt;LoanExtended&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, newDueDate&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="277" width="200" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 4: LendP2PBook -->
+        <mxCell id="lend_a4" value="Member&lt;br&gt;(Owner)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="392" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c4" value="&lt;b&gt;LendP2PBook&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId,&lt;br&gt;borrowerMemberId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="382" width="155" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_r4" value="所有者本人 / 借手上限5冊 / 延滞なし" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#C62828;fontSize=7;dashed=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="452" width="155" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g4" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="387" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e4" value="&lt;b&gt;P2PBookLent&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, bookCopyId,&lt;br&gt;lenderId, borrowerId, dueDate&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="382" width="200" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_p4" value="catalog BookCopy&lt;br&gt;状態を onLoan に同期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_lend">
+          <mxGeometry x="760" y="387" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 5: ReturnP2PBook -->
+        <mxCell id="lend_a5" value="Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="502" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c5" value="&lt;b&gt;ReturnP2PBook&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;bookCopyId (barcode)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="497" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g5" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="497" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e5" value="&lt;b&gt;P2PBookReturned&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, bookCopyId,&lt;br&gt;lenderId, borrowerId&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="492" width="200" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_p5" value="catalog BookCopy&lt;br&gt;状態を available に同期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CE93D8;strokeColor=#6A1B9A;fontSize=9;" vertex="1" parent="s_lend">
+          <mxGeometry x="760" y="497" width="175" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Row 6: DetectOverdue -->
+        <mxCell id="lend_a6" value="Scheduler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=9;fontStyle=2;" vertex="1" parent="s_lend">
+          <mxGeometry x="20" y="587" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_c6" value="&lt;b&gt;DetectOverdueLoans&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;daily batch&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1565C0;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="135" y="582" width="155" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_g6" value="&lt;b&gt;Loan&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF59D;strokeColor=#F57F17;fontSize=12;fontStyle=1;" vertex="1" parent="s_lend">
+          <mxGeometry x="340" y="582" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="lend_e6" value="&lt;b&gt;LoanOverdue&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:8px&quot;&gt;loanId, bookCopyId,&lt;br&gt;memberId, dueDate&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB74D;strokeColor=#E65100;fontSize=10;" vertex="1" parent="s_lend">
+          <mxGeometry x="510" y="577" width="200" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Lending edges -->
+        <mxCell id="e_l11" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a1" target="lend_c1" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l12" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c1" target="lend_g1" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l13" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g1" target="lend_e1" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l14" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="lend_e1" target="lend_p1" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l21" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a2" target="lend_c2" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l22" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c2" target="lend_g2" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l23" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g2" target="lend_e2" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l24" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="lend_e2" target="lend_p2" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l31" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a3" target="lend_c3" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l32" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c3" target="lend_g3" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l33" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g3" target="lend_e3" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l41" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a4" target="lend_c4" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l42" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c4" target="lend_g4" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l43" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g4" target="lend_e4" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l44" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="lend_e4" target="lend_p4" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l51" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a5" target="lend_c5" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l52" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c5" target="lend_g5" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l53" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g5" target="lend_e5" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l54" style="rounded=1;strokeColor=#999;dashed=1;" edge="1" source="lend_e5" target="lend_p5" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l61" style="rounded=1;strokeColor=#999;" edge="1" source="lend_a6" target="lend_c6" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l62" style="rounded=1;strokeColor=#999;" edge="1" source="lend_c6" target="lend_g6" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_l63" style="rounded=1;strokeColor=#999;" edge="1" source="lend_g6" target="lend_e6" parent="s_lend"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- ==================== CROSS-CONTEXT EVENT FLOWS ==================== -->
+        <mxCell id="e_cross1" value="event" style="rounded=1;strokeColor=#E65100;dashed=1;strokeWidth=2;" edge="1" source="lend_e1" target="cat_ext1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_cross2" value="event" style="rounded=1;strokeColor=#E65100;dashed=1;strokeWidth=2;" edge="1" source="lend_e2" target="cat_ext1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_cross3" value="event" style="rounded=1;strokeColor=#E65100;dashed=1;strokeWidth=2;" edge="1" source="cat_e2" target="lend_g1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_cross4" value="event" style="rounded=1;strokeColor=#6A1B9A;dashed=1;strokeWidth=2;" edge="1" source="mem_e1" target="lend_g1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
