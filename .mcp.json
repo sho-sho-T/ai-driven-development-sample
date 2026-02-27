@@ -4,6 +4,10 @@
 			"command": "bunx",
 			"args": ["--bun", "shadcn@latest", "mcp"],
 			"cwd": "apps/web"
+		},
+		"drawio": {
+			"command": "npx",
+			"args": ["-y", "@drawio/mcp"]
 		}
 	}
 }
