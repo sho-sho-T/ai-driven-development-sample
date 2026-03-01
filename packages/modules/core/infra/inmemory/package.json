@@ -1,0 +1,14 @@
+{
+	"name": "@modules/core-infra-inmemory",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@shared-kernel/public": "workspace:*",
+		"@contracts/core-public": "workspace:*",
+		"@modules/core-write": "workspace:*"
+	}
+}
