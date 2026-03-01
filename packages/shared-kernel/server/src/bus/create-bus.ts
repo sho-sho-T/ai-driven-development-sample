@@ -17,6 +17,7 @@
  */
 import { errAsync } from "neverthrow";
 import type { AppError } from "@shared-kernel/public";
+import { KernelErrors } from "@shared-kernel/public";
 import type {
 	Bus,
 	ExecutionContext,
@@ -53,11 +54,16 @@ export function createBus(options: CreateBusOptions): Bus {
 		): ResultAsync<TResult, AppError> {
 			const handler = handlerMap.get(message.type);
 			if (!handler) {
-				return errAsync({
-					type: "HANDLER_NOT_FOUND",
-					message: `No handler registered for message type: ${message.type}`,
-					meta: { exposure: "UNEXPECTED" },
-				});
+				return errAsync(
+					KernelErrors.BUG.create(
+						{},
+						{
+							cause: new Error(
+								`No handler registered for message type: ${message.type}`,
+							),
+						},
+					),
+				);
 			}
 
 			/** ミドルウェアチェーンを構築し、最内層でハンドラーを実行する */

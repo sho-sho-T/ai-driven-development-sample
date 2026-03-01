@@ -5,27 +5,30 @@
  * DI コンテナ、Bus（CQRS ディスパッチ）、ミドルウェア、コンテキストを提供する。
  */
 
-// Container
-export {
-	type Token,
-	createToken,
-	type Container,
-	createContainer,
-} from "./container/container.ts";
-
+// Typed Bus
+export { type CommandBus } from "./bus/command-bus.ts";
+export { type CommandHandlerFactory } from "./bus/command-handler.ts";
+export { createBus } from "./bus/create-bus.ts";
+// Middleware
+export { loggingMiddleware } from "./bus/middleware/logging-middleware.ts";
+export { type QueryBus } from "./bus/query-bus.ts";
+export { type QueryHandlerFactory } from "./bus/query-handler.ts";
 // Bus
 export {
-	type Message,
+	type Bus,
 	type ExecutionContext,
 	type Handler,
 	type HandlerDefinition,
+	type Message,
 	type Middleware,
-	type Bus,
 } from "./bus/types.ts";
-export { createBus } from "./bus/create-bus.ts";
-
-// Middleware
-export { loggingMiddleware } from "./bus/middleware/logging-middleware.ts";
+// Container
+export {
+	type Container,
+	createContainer,
+	createToken,
+	type Token,
+} from "./container/container.ts";
 
 // Context
 export { createExecutionContext } from "./context/context.ts";
