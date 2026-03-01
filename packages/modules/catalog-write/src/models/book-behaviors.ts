@@ -11,7 +11,7 @@ import { ok, err, type Result } from "neverthrow";
 import type { AppError } from "@shared-kernel/public";
 import { generateId } from "@shared-kernel/public";
 import { BookSchema, type Book, IsbnSchema } from "./book.ts";
-import { catalogValidationError } from "@contracts/catalog-public";
+import { CatalogValidationError } from "@contracts/catalog-public";
 import type { BookStatus } from "./book.ts";
 
 /** 書籍生成の入力 */
@@ -34,7 +34,11 @@ interface CreateBookInput {
 export function createBook(input: CreateBookInput): Result<Book, AppError> {
 	const isbnResult = IsbnSchema.safeParse(input.isbn);
 	if (!isbnResult.success) {
-		return err(catalogValidationError(isbnResult.error.errors[0].message));
+		return err(
+			CatalogValidationError.create({
+				details: isbnResult.error.issues[0]!.message,
+			}),
+		);
 	}
 
 	const bookData = {
@@ -49,7 +53,11 @@ export function createBook(input: CreateBookInput): Result<Book, AppError> {
 
 	const parseResult = BookSchema.safeParse(bookData);
 	if (!parseResult.success) {
-		return err(catalogValidationError(parseResult.error.errors[0].message));
+		return err(
+			CatalogValidationError.create({
+				details: parseResult.error.issues[0]!.message,
+			}),
+		);
 	}
 
 	return ok(parseResult.data);

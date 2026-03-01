@@ -12,6 +12,3 @@ export { createBook, changeBookStatus } from "./models/book-behaviors.ts";
 
 // Repository interface (port)
 export type { BookRepository } from "./repositories/book-repository.ts";
-
-// Command bus builder
-export { buildCatalogCommandBus } from "./command-bus/bus.ts";

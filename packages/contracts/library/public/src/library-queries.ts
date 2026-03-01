@@ -22,14 +22,13 @@ export type LibraryDto = z.infer<typeof LibraryDtoSchema>;
  */
 export const LibraryListQuerySchema = z.object({
 	type: z.literal("library.listLibraries"),
-	name: z.string(),
-	location: z.string(),
 });
 export type LibraryListQuery = z.infer<typeof LibraryListQuerySchema>;
 
 /** 図書館一覧取得結果 */
 export interface LibraryListResult {
 	libraries: LibraryDto[];
+	total: number;
 }
 
 /**

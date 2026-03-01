@@ -1,0 +1,17 @@
+{
+	"name": "@modules/library-infra-db",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@shared-kernel/public": "workspace:*",
+		"@shared-kernel/server": "workspace:*",
+		"@contracts/library-public": "workspace:*",
+		"@contracts/library-server": "workspace:*",
+		"@modules/library-write": "workspace:*",
+		"@modules/library-read": "workspace:*"
+	}
+}

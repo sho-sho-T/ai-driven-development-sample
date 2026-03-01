@@ -5,6 +5,18 @@
  * エラー型、ロガー、ID スキーマ、ユーティリティを提供する。
  */
 
+// ID
+export {
+	type BookId,
+	BookIdSchema,
+	generateId,
+	type LibraryId,
+	LibraryIdSchema,
+	type LoanId,
+	LoanIdSchema,
+	type MemberId,
+	MemberIdSchema,
+} from "./core-types.ts";
 // Error
 export {
 	AppError,
@@ -20,18 +32,6 @@ export {
 	KernelErrors,
 	type ResourceError,
 } from "./error/index.ts";
-// ID
-export {
-	type BookId,
-	BookIdSchema,
-	generateId,
-	type LibraryId,
-	LibraryIdSchema,
-	type LoanId,
-	LoanIdSchema,
-	type MemberId,
-	MemberIdSchema,
-} from "./id/id-schemas.ts";
 // Logger
 export type {
 	LogContext,

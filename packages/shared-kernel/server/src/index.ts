@@ -31,4 +31,10 @@ export {
 } from "./container/container.ts";
 
 // Context
-export { createExecutionContext } from "./context/context.ts";
+export {
+	type Context,
+	createNewContext,
+	forkContext,
+	updateContainer,
+	createExecutionContext,
+} from "./context/context.ts";

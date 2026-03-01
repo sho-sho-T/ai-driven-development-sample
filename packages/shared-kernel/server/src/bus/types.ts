@@ -13,16 +13,15 @@
 import type { ResultAsync } from "neverthrow";
 import type { AppError } from "@shared-kernel/public";
 import type { Container } from "../container/container.ts";
+import type { Context } from "../context/context.ts";
 
 /** Command / Query の基底型。`type` フィールドで識別する */
 export interface Message {
 	readonly type: string;
 }
 
-/** リクエスト単位の実行コンテキスト */
-export interface ExecutionContext {
-	readonly container: Container;
-}
+/** リクエスト単位の実行コンテキスト（Context の型エイリアス） */
+export type ExecutionContext = Context;
 
 /** Message を処理するハンドラー関数 */
 export type Handler<TMessage extends Message, TResult> = (

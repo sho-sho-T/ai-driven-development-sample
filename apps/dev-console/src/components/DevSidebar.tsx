@@ -15,6 +15,13 @@ export default function DevSidebar() {
 				>
 					Dashboard
 				</Link>
+				<Link
+					to="/libraries"
+					className="dev-nav-link"
+					activeProps={{ className: "active" }}
+				>
+					Libraries
+				</Link>
 			</nav>
 		</aside>
 	);

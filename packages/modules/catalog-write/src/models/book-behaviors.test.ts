@@ -55,7 +55,7 @@ describe("createBook", () => {
 
 		expect(result.isErr()).toBe(true);
 		if (result.isErr()) {
-			expect(result.error.type).toBe("CATALOG_VALIDATION_ERROR");
+			expect(result.error.code).toBe("CATALOG_VALIDATION_ERROR");
 		}
 	});
 
@@ -68,7 +68,7 @@ describe("createBook", () => {
 
 		expect(result.isErr()).toBe(true);
 		if (result.isErr()) {
-			expect(result.error.type).toBe("CATALOG_VALIDATION_ERROR");
+			expect(result.error.code).toBe("CATALOG_VALIDATION_ERROR");
 		}
 	});
 
@@ -81,7 +81,7 @@ describe("createBook", () => {
 
 		expect(result.isErr()).toBe(true);
 		if (result.isErr()) {
-			expect(result.error.type).toBe("CATALOG_VALIDATION_ERROR");
+			expect(result.error.code).toBe("CATALOG_VALIDATION_ERROR");
 		}
 	});
 });

@@ -1,0 +1,201 @@
+<mxfile host="65bd71144e">
+    <diagram name="Application Architecture" id="arch-diagram">
+        <mxGraphModel dx="1532" dy="831" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2200" pageHeight="2000" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="&lt;b&gt;Application Architecture&lt;/b&gt;" style="text;html=1;fontSize=28;fontStyle=0;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="10" width="700" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="pres_bg" value="&lt;b&gt;Presentation Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=15;fontStyle=0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;opacity=60;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="70" width="660" height="310" as="geometry"/>
+                </mxCell>
+                <mxCell id="webapp" value="&lt;b&gt;Web App&lt;/b&gt;&lt;br&gt;(React + TanStack Start / Server Functions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;verticalAlign=top;align=center;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="110" width="500" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="webapp_ui" value="UI Components&lt;br&gt;(Forms / Screens)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="170" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="webapp_sf" value="Server Function&lt;br&gt;(SSR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="170" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="webapp_wrapper" value="&lt;b&gt;commandHandler Wrapper&lt;/b&gt;&lt;br&gt;Session → Context 生成&lt;br&gt;DI Container 初期化&lt;br&gt;Handler 呼び出し" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F0FF;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="250" width="460" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="app_bg" value="&lt;b&gt;Application Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=15;fontStyle=0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;opacity=60;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="420" width="1100" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="cmd_bus" value="&lt;b&gt;Command Bus (Write)&lt;/b&gt;&lt;br&gt;CQRS Write 側" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;verticalAlign=top;align=center;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="460" width="430" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="cmd_builder" value="&lt;b&gt;CommandBusBuilder&lt;/b&gt;&lt;br&gt;ビルダーパターンでバス組立" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="520" width="200" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="cmd_middleware" value="&lt;b&gt;Middleware Chain&lt;/b&gt;&lt;br&gt;[m1, m2, m3] 外側から適用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="590" width="200" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="cmd_handlers" value="&lt;b&gt;CommandHandler(s)&lt;/b&gt;&lt;br&gt;factory(deps) =&gt; handler&lt;br&gt;ドメインモデル操作 → Repository保存" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8E1;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="660" width="390" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="cmd_bus_note" value="モジュールごとに独立&lt;br&gt;(TenantManagement用, Delivery用 等)" style="text;html=1;fontSize=10;fontColor=#888888;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="740" width="280" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="query_bus" value="&lt;b&gt;Query Bus (Read)&lt;/b&gt;&lt;br&gt;CQRS Read 側&lt;br&gt;&lt;br&gt;QueryBusBuilder&lt;br&gt;Middleware Chain&lt;br&gt;QueryHandler(s)&lt;br&gt;&lt;br&gt;&lt;i&gt;Command Bus と対称構成&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="770" y="460" width="280" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="event_bus" value="&lt;b&gt;Domain Event Bus&lt;/b&gt;&lt;br&gt;&lt;br&gt;ドメインイベントの&lt;br&gt;非同期発行・購読&lt;br&gt;(InMemory 実装)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="460" width="310" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="domain_bg" value="&lt;b&gt;Domain Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=15;fontStyle=0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;opacity=60;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="840" width="1100" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="aggregates" value="&lt;b&gt;Write 側 Aggregate&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;verticalAlign=top;align=center;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="880" width="420" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_tenant" value="Tenant&lt;br&gt;Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="930" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_dp" value="DeliveryPerson&lt;br&gt;Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="930" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_pl" value="PickupLocation&lt;br&gt;Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="930" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_ship" value="Shipment&lt;br&gt;Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="995" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_run" value="DeliveryRun&lt;br&gt;Aggregate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="995" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="agg_note" value="ビジネスルールをカプセル化&lt;br&gt;純粋関数として実装" style="text;html=1;fontSize=10;fontColor=#555555;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="1060" width="250" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="repo_if" value="&lt;b&gt;Repository&lt;br&gt;Interface&lt;/b&gt;&lt;br&gt;&lt;br&gt;Domain Layer が宣言&lt;br&gt;実装は Infra Layer&lt;br&gt;(依存性逆転)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="770" y="880" width="200" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="query_svc_if" value="&lt;b&gt;QueryService&lt;br&gt;Interface&lt;/b&gt;&lt;br&gt;&lt;br&gt;Read モデルの&lt;br&gt;DB問い合わせ IF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1000" y="880" width="200" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="infra_bg" value="&lt;b&gt;Infrastructure Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=15;fontStyle=0;verticalAlign=top;align=left;spacingLeft=12;spacingTop=6;opacity=60;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="1180" width="1100" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="db_infra" value="&lt;b&gt;DB Infra (Drizzle ORM)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;verticalAlign=top;align=center;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="1220" width="730" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="repo_impl" value="&lt;b&gt;Repository 実装&lt;/b&gt;&lt;br&gt;DrizzleTenantRepository&lt;br&gt;DrizzleDeliveryPersonRepository&lt;br&gt;etc." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="1270" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="query_impl" value="&lt;b&gt;QueryService 実装&lt;/b&gt;&lt;br&gt;DrizzleTenantQueryService&lt;br&gt;etc." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="1270" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="db_conn" value="DB 接続 / Schema" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="1270" width="130" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ext_infra" value="&lt;b&gt;External Infra&lt;/b&gt;&lt;br&gt;&lt;br&gt;Cognito 等&lt;br&gt;外部認証サービス実装" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1080" y="1220" width="300" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="contracts_bg" value="&lt;b&gt;Contracts Layer&lt;/b&gt;&lt;br&gt;(型定義 / IF契約)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=0;verticalAlign=top;align=center;spacingTop=8;opacity=70;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="70" width="250" height="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="contracts_public" value="&lt;b&gt;contracts/public&lt;/b&gt;&lt;br&gt;&lt;br&gt;Command / Query 定義&lt;br&gt;Error 型&lt;br&gt;zod スキーマ&lt;br&gt;&lt;br&gt;&lt;i&gt;Client にも公開&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=10;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="150" width="220" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="contracts_server" value="&lt;b&gt;contracts/server&lt;/b&gt;&lt;br&gt;&lt;br&gt;CommandBus 型&lt;br&gt;QueryBus 型&lt;br&gt;HandlerDefinition 型&lt;br&gt;&lt;br&gt;&lt;i&gt;Server 内部のみ&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=10;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="310" width="220" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="di_bg" value="&lt;b&gt;DI Container&lt;/b&gt;&lt;br&gt;(依存性注入)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=0;verticalAlign=top;align=center;spacingTop=8;opacity=70;" parent="1" vertex="1">
+                    <mxGeometry x="1430" y="70" width="280" height="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="di_tokens" value="&lt;b&gt;Tokens&lt;/b&gt;&lt;br&gt;型付きトークンで&lt;br&gt;リソースを識別" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontSize=10;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1445" y="150" width="250" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="di_register" value="&lt;b&gt;Register / Resolve&lt;/b&gt;&lt;br&gt;container.register(Token, factory)&lt;br&gt;container.resolve(Token)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontSize=10;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1445" y="230" width="250" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="di_bus_assembly" value="&lt;b&gt;CommandBus 組み立て&lt;/b&gt;&lt;br&gt;createCommandBus({&lt;br&gt;  resolveDeps: (c) =&gt; ({&lt;br&gt;    repository: c.resolve(Token)&lt;br&gt;  })&lt;br&gt;})" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673a6;fontSize=10;verticalAlign=middle;align=left;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry x="1445" y="315" width="250" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="di_context" value="&lt;b&gt;Context&lt;/b&gt;&lt;br&gt;{ tenantId, deliveryPersonId,&lt;br&gt;  correlationId, causationId,&lt;br&gt;  container }" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#9673a6;fontSize=10;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1445" y="430" width="250" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="sk_bg" value="&lt;b&gt;Shared Kernel&lt;/b&gt;　(全レイヤーから参照される共通基盤)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce5cd;strokeColor=#d6b656;fontSize=14;fontStyle=0;verticalAlign=top;align=center;spacingTop=8;opacity=70;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="1480" width="1690" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="sk_public" value="&lt;b&gt;shared-kernel/public&lt;/b&gt;&lt;br&gt;&lt;br&gt;AppError, Logger&lt;br&gt;基本型 (TenantId, DeliveryPersonId 等)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1530" width="400" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="sk_server" value="&lt;b&gt;shared-kernel/server&lt;/b&gt;&lt;br&gt;&lt;br&gt;Context型, CommandBus型, QueryBus型,&lt;br&gt;Middleware型, Container (DI実装), applyMiddlewares" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#d6b656;fontSize=11;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="1530" width="500" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow1" value="bus.execute(command, ctx)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;fontSize=10;fontColor=#333333;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="webapp_wrapper" target="cmd_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow2" value="bus.execute(command, ctx)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#333333;fontSize=10;fontColor=#333333;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" target="cmd_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="870" y="295" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow4" value="ドメインロジック実行" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#2E7D32;fontSize=10;fontColor=#2E7D32;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="cmd_handlers" target="aggregates" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow5" value="保存 (IF依存)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#2E7D32;fontSize=10;fontColor=#2E7D32;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="cmd_handlers" target="repo_if" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow6" value="implements (依存性逆転)" style="endArrow=open;html=1;strokeWidth=2;strokeColor=#E65100;dashed=1;dashPattern=8 4;fontSize=10;fontColor=#E65100;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="repo_impl" target="repo_if" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow6b" value="implements" style="endArrow=open;html=1;strokeWidth=2;strokeColor=#E65100;dashed=1;dashPattern=8 4;fontSize=10;fontColor=#E65100;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="query_impl" target="query_svc_if" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow7" value="バス組み立て・注入" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#7B1FA2;fontSize=10;fontColor=#7B1FA2;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="di_bus_assembly" target="cmd_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow8" value="実装の登録・解決" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#7B1FA2;fontSize=10;fontColor=#7B1FA2;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="di_register" target="repo_impl" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1750" y="265"/>
+                            <mxPoint x="1750" y="1310"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow9a" value="" style="endArrow=open;html=1;strokeWidth=1.5;strokeColor=#B8860B;dashed=1;dashPattern=6 4;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" parent="1" source="contracts_bg" target="webapp" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow9b" value="" style="endArrow=open;html=1;strokeWidth=1.5;strokeColor=#B8860B;dashed=1;dashPattern=6 4;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="contracts_bg" target="cmd_bus" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow9c" value="型定義の参照" style="endArrow=open;html=1;strokeWidth=1.5;strokeColor=#B8860B;dashed=1;dashPattern=6 4;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;" parent="1" source="contracts_bg" target="aggregates" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow10a" value="" style="endArrow=open;html=1;strokeWidth=1.5;strokeColor=#A0522D;dashed=1;dashPattern=6 4;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=0.2;exitY=0;entryX=0.5;entryY=1;" parent="1" source="sk_bg" target="pres_bg" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="358" y="1470"/>
+                            <mxPoint x="200" y="1470"/>
+                            <mxPoint x="200" y="380"/>
+                            <mxPoint x="850" y="380"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow10b" value="基盤型の参照" style="endArrow=open;html=1;strokeWidth=1.5;strokeColor=#A0522D;dashed=1;dashPattern=6 4;edgeStyle=orthogonalEdgeStyle;curved=1;exitX=0.8;exitY=0;entryX=0.5;entryY=1;" parent="1" source="sk_bg" target="infra_bg" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow_qb" value="クエリ dispatch" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#2E7D32;fontSize=10;fontColor=#2E7D32;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="query_bus" target="query_svc_if" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="callout1" value="型安全：全コマンドの網羅を&lt;br&gt;コンパイル時に強制&lt;br&gt;(未登録はコンパイルエラー)" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=20;position=0.5;position2=1;base=15;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;fontStyle=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="490" width="210" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="callout2" value="ロギング / リトライ / トランザクション" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=15;position=0.5;position2=0;base=12;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;fontStyle=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="580" width="210" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="callout3" value="リクエストスコープで&lt;br&gt;Context を生成" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=15;position=0.3;position2=1;base=12;fillColor=#E8EAF6;strokeColor=#5C6BC0;fontSize=10;fontStyle=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="1450" y="520" width="170" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="callout4" value="Layer をまたぐ API 契約を&lt;br&gt;型で定義" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=15;position=0.5;position2=0;base=12;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;fontStyle=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="470" width="200" height="55" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -11,7 +11,14 @@
 		"format": "biome format --write ."
 	},
 	"dependencies": {
+		"@contracts/library-public": "workspace:*",
+		"@contracts/library-server": "workspace:*",
+		"@modules/library-infra-db": "workspace:*",
+		"@modules/library-read": "workspace:*",
+		"@modules/library-write": "workspace:*",
+		"@shared-kernel/server": "workspace:*",
 		"@tanstack/react-devtools": "^0.7.0",
+		"@tanstack/react-query": "^5.72.2",
 		"@tanstack/react-router": "^1.132.0",
 		"@tanstack/react-router-devtools": "^1.132.0",
 		"@tanstack/react-router-ssr-query": "^1.131.7",

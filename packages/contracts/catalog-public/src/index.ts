@@ -29,7 +29,7 @@ export {
 
 // Errors
 export {
-	isbnAlreadyExists,
-	bookNotFound,
-	catalogValidationError,
+	IsbnAlreadyExistsError,
+	BookNotFoundError,
+	CatalogValidationError,
 } from "./catalog-errors.ts";

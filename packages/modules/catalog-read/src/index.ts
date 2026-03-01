@@ -13,6 +13,3 @@ export {
 
 // Query service interface (port)
 export type { BookQueryService } from "./models/book-query-service.ts";
-
-// Query bus builder
-export { buildCatalogQueryBus } from "./query-bus/bus.ts";

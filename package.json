@@ -8,17 +8,19 @@
 	"workspaces": [
 		"apps/*",
 		"packages/shared-kernel/*",
-		"packages/contracts/*",
-		"packages/modules/*",
+		"packages/contracts/**",
+		"packages/modules/**",
 		"packages/platform/*"
 	],
 	"dependencies": {
 		"@cloudflare/vite-plugin": "^1.25.4",
 		"neverthrow": "^8.2.0",
 		"nitro": "npm:nitro-nightly@latest",
-		"zod": "^3.24.2"
+		"zod": "4.3.5"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.14"
+		"@biomejs/biome": "^2.3.14",
+		"@types/node": "^22.10.2",
+		"vitest": "^3.0.5"
 	}
 }

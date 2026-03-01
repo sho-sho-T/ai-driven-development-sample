@@ -5,7 +5,7 @@
  *
  * フロー:
  * 1. BookQueryService で ID による ReadModel を取得
- * 2. 存在しない場合は bookNotFound エラーを返す
+ * 2. 存在しない場合は BookNotFoundError を返す
  * 3. BookDto に変換して返却
  */
 import { okAsync, errAsync } from "neverthrow";
@@ -14,7 +14,7 @@ import type { HandlerDefinition, Container } from "@shared-kernel/server";
 import {
 	type GetBookByIdQuery,
 	type BookDto,
-	bookNotFound,
+	BookNotFoundError,
 } from "@contracts/catalog-public";
 import { BookQueryServiceToken } from "@contracts/catalog-server";
 import type { BookQueryService } from "../../models/book-query-service.ts";
@@ -31,7 +31,7 @@ export const getBookByIdHandler: HandlerDefinition<GetBookByIdQuery, BookDto> =
 				return queryService.findById(query.bookId).andThen((book) => {
 					if (book === null) {
 						return errAsync<BookDto, AppError>(
-							bookNotFound(`Book with id ${query.bookId} not found`),
+							BookNotFoundError.create({ id: query.bookId }),
 						);
 					}
 

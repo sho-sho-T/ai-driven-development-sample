@@ -19,8 +19,8 @@ import {
 	RegisterBookInputSchema,
 	type RegisterBookCommand,
 	type BookDto,
-	isbnAlreadyExists,
-	catalogValidationError,
+	IsbnAlreadyExistsError,
+	CatalogValidationError,
 } from "@contracts/catalog-public";
 import { BookRepositoryToken } from "@contracts/catalog-server";
 import { createBook } from "../../models/book-behaviors.ts";
@@ -43,7 +43,9 @@ export const registerBookHandler: HandlerDefinition<
 			const parseResult = RegisterBookInputSchema.safeParse(command.input);
 			if (!parseResult.success) {
 				return errAsync(
-					catalogValidationError(parseResult.error.errors[0].message),
+					CatalogValidationError.create({
+						details: parseResult.error.issues[0]!.message,
+					}),
 				);
 			}
 			const input = parseResult.data;
@@ -52,7 +54,7 @@ export const registerBookHandler: HandlerDefinition<
 			return repository.findByIsbn(input.isbn).andThen((existing) => {
 				if (existing !== null) {
 					return errAsync<BookDto, AppError>(
-						isbnAlreadyExists(`ISBN ${input.isbn} is already registered`),
+						IsbnAlreadyExistsError.create({ isbn: input.isbn }),
 					);
 				}
 

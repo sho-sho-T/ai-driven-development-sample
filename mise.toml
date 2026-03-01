@@ -9,7 +9,17 @@ rust = "latest"
 _.file = ".env"
 
 [tasks.dev]
-description = "Start TanStack Start dev server"
+description = "Start all dev servers (web:3000, admin-web:3001, dev-console:3002)"
+run = """
+bunx concurrently \
+  -n web,console \
+  -c blue,yellow \
+  "cd apps/web && bun run dev" \
+  "cd apps/dev-console && bun run dev"
+"""
+
+[tasks."dev:web"]
+description = "Start web dev server"
 run = "cd apps/web && bun run dev"
 
 [tasks."dev:admin"]
@@ -19,16 +29,6 @@ run = "cd apps/admin-web && bun run dev"
 [tasks."dev:console"]
 description = "Start dev-console dev server"
 run = "cd apps/dev-console && bun run dev"
-
-[tasks."dev:all"]
-description = "Start all applications (web:3000, admin-web:3001, dev-console:3002)"
-run = """
-trap 'kill 0' INT TERM EXIT
-(cd apps/web && bun run dev) &
-(cd apps/admin-web && bun run dev) &
-(cd apps/dev-console && bun run dev) &
-wait
-"""
 
 [tasks.lint]
 description = "Run lint checks with Biome"

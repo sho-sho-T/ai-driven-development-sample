@@ -25,11 +25,16 @@ export function createToken<T>(key: string): Token<T> {
 export interface Container {
 	register<T>(token: Token<T>, instance: T): void;
 	resolve<T>(token: Token<T>): T;
+	isRegistered(token: Token<unknown>): boolean;
+	fork(): Container;
+	clone(): Container;
 }
 
 /** インメモリ DI コンテナを生成する */
-export function createContainer(): Container {
-	const registry = new Map<string, unknown>();
+export function createContainer(initial?: Map<string, unknown>): Container {
+	const registry = initial
+		? new Map<string, unknown>(initial)
+		: new Map<string, unknown>();
 
 	return {
 		register<T>(token: Token<T>, instance: T): void {
@@ -42,6 +47,18 @@ export function createContainer(): Container {
 				throw new Error(`No registration found for token: ${token.key}`);
 			}
 			return instance as T;
+		},
+
+		isRegistered(token: Token<unknown>): boolean {
+			return registry.has(token.key);
+		},
+
+		fork(): Container {
+			return createContainer(new Map(registry));
+		},
+
+		clone(): Container {
+			return createContainer(new Map(registry));
 		},
 	};
 }
