@@ -20,8 +20,8 @@
 ```
 apps/
 ├── web/           # エンドユーザー向け Web アプリ（TanStack Start）
-├── admin-web/     # 管理者向け Web アプリ（TanStack Start）
-└── dev-console/   # 開発者向けコンソール
+├── admin-web/     # 管理者向け Web アプリ（TanStack Router + Vite）
+└── dev-console/   # 開発者向けコンソール（TanStack Router + Vite）
 ```
 
 - アプリ間で実装を直接共有しない（共有ロジックは `packages/` に切り出す）
@@ -58,9 +58,9 @@ features/
 ```
 packages/
 ├── shared-kernel/   # 全コンテキスト共通の基盤ライブラリ
-├── contracts/       # コンテキスト間の契約定義
-├── modules/         # ビジネスコンテキストごとの実装（CQRS）
-└── platform/        # インフラ・プラットフォーム共通機能
+├── contracts/       # コンテキスト間の契約定義（コンテキストごとにネスト）
+├── modules/         # ビジネスコンテキストごとの実装（CQRS、コンテキストごとにネスト）
+└── platform/        # インフラ・プラットフォーム共通機能（db, supabase 等）
 ```
 
 ## tools/

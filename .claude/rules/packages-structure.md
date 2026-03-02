@@ -35,55 +35,80 @@ packages/
 | `@contracts/<context>-public` | クライアントが参照するコマンド/クエリ定義・DTO |
 | `@contracts/<context>-server` | サーバー内部で参照するコマンド/クエリ定義・ドメインイベント |
 
-contracts パッケージの内部構成:
+contracts パッケージのディレクトリ構成（コンテキストごとにネスト）:
 
 ```
-contracts/<context>-{public|server}/
-├── commands/    # Command 定義 + Input DTO
-├── queries/     # Query 定義 + Input DTO
-├── events/      # DomainEvent 定義（server のみ）
-├── dtos/        # Output DTO
-└── index.ts     # 公開 API（re-export）
+contracts/
+└── <context>/
+    ├── public/    # @contracts/<context>-public
+    │   └── src/
+    │       └── index.ts
+    └── server/    # @contracts/<context>-server
+        └── src/
+            └── index.ts
 ```
+
+現在のコンテキスト:
+
+| コンテキスト | public | server |
+|-------------|--------|--------|
+| `core` | DomainEvent 型定義 | CoreTokens, DomainEventIdGenerator |
+| `library` | LibraryCommand/Query 定義・DTO・エラー | LibraryCommand/Query 定義・トークン |
 
 ### modules/
 
-コンテキストごとのビジネスロジック実装。CQRS パターンに基づき Write / Read / infra-db に分割する。
+コンテキストごとのビジネスロジック実装。CQRS パターンに基づき write / read / infra に分割する。
 
 | パッケージ | 用途 |
 |-----------|------|
 | `@modules/<context>-write` | Write 側: ドメインモデル・CommandHandler・Repository インターフェース |
-| `@modules/<context>-read` | Read 側: QueryHandler（DB から直接読み取り） |
-| `@modules/<context>-infra-db` | DB 実装: Repository 実装・マイグレーション |
+| `@modules/<context>-read` | Read 側: QueryHandler（ReadModel から直接読み取り） |
+| `@modules/<context>-infra-db` | DB 実装: Repository 実装 |
+| `@modules/<context>-infra-inmemory` | インメモリ実装: テスト・開発用 |
 
-modules パッケージの内部構成:
+modules パッケージのディレクトリ構成（コンテキストごとにネスト）:
 
-modules/<context>-write/
-├── application/
-│   ├── commands/          # CommandHandler
-│   └── services/          # ApplicationService（複数 Aggregate 連携時）
-├── domain/
-│   ├── models/            # Entity / Aggregate / ValueObject
-│   ├── events/            # DomainEvent
-│   ├── services/          # DomainService
-│   └── repositories/      # Repository インターフェース
-└── infra/
-    ├── repositories/      # Repository 実装
-    └── container.ts       # DI 登録
+```
+modules/
+└── <context>/
+    ├── write/              # @modules/<context>-write
+    │   └── src/
+    │       ├── models/         # Aggregate / ValueObject / Repository インターフェース
+    │       ├── command-bus/
+    │       │   ├── handlers/   # CommandHandler
+    │       │   ├── builder.ts
+    │       │   └── bus.ts
+    │       └── index.ts
+    ├── read/               # @modules/<context>-read
+    │   └── src/
+    │       ├── models/         # ReadModel / QueryService インターフェース
+    │       ├── query-bus/
+    │       │   ├── handlers/   # QueryHandler
+    │       │   ├── builder.ts
+    │       │   └── bus.ts
+    │       └── index.ts
+    └── infra/
+        ├── db/             # @modules/<context>-infra-db
+        │   └── src/        # Repository 実装（DB）
+        └── inmemory/       # @modules/<context>-infra-inmemory
+            └── src/        # Repository 実装（インメモリ）
+```
 
-modules/<context>-read/
-└── application/
-    └── queries/           # QueryHandler
+現在のコンテキスト:
 
-`modules/<context>-infra/`: インフラ実装（例: `db/`）
+| コンテキスト | write | read | infra |
+|-------------|-------|------|-------|
+| `core` | DomainEventPublisher/Store/Subscriber | - | `inmemory`: InMemoryDomainEventBus |
+| `library` | Library 集約・CommandHandler | QueryHandler・ReadModel | `db`: DB 実装, `inmemory`: インメモリ実装 |
 
 ### platform/
 
-インフラ層の共通コンポーネント。各モジュールの`infra`から参照する
+インフラ層の共通コンポーネント。各モジュールの infra から参照する。
 
 | パッケージ | 用途 |
 |-----------|------|
-| `platform/db` | データベース共通 |
+| `@platform/db` | データベース共通（Prisma 等） |
+| `platform/supabase` | Supabase マイグレーション・設定 |
 
 ---
 
@@ -91,7 +116,7 @@ modules/<context>-read/
 
 - **shared-kernel**: どこからでも参照可
 - **contracts**: コンテキストを跨いで参照可。モジュール間の連携は contracts 経由で行う
-- **modules**: 他コンテキストのmodulesを直接参照禁止。連携はcontractsを介する
+- **modules**: 他コンテキストの modules を直接参照禁止。連携は contracts を介する
 
 ### 禁止事項
 

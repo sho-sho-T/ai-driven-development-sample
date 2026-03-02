@@ -2,6 +2,7 @@
 description: PR マージ後のワークツリー削除・main 最新化を行う
 allowed-tools:
   - Bash
+disable-model-invocation: true
 ---
 
 # done コマンド
