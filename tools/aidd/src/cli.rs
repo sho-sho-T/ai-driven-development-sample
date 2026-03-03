@@ -36,8 +36,12 @@ pub enum Commands {
 pub enum WtAction {
     /// Create worktree + branch + install deps (idempotent)
     Ensure {
+        /// Branch prefix (feat, fix, refactor, test, docs, chore)
+        prefix: String,
         /// Issue number
         issue: u32,
+        /// Short task summary used in branch/worktree name (e.g. add-library-registration)
+        summary: String,
     },
     /// Remove worktree + clean up branch
     Remove {

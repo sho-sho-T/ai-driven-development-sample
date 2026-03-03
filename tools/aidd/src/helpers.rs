@@ -4,13 +4,49 @@ use std::process::Command;
 use anyhow::{Context, Result};
 
 /// Generate the branch name for an issue.
-pub fn branch_name(issue: u32) -> String {
-    format!("feat/issue-{issue}")
+pub fn branch_name(prefix: &str, issue: u32, summary: &str) -> String {
+    format!("{prefix}/{issue}-{summary}")
 }
 
 /// Generate the worktree path for an issue.
-pub fn worktree_path(issue: u32) -> PathBuf {
-    repo_root().join(format!(".worktrees/issue-{issue}"))
+pub fn worktree_path(issue: u32, summary: &str) -> PathBuf {
+    repo_root().join(format!(".worktrees/{issue}-{summary}"))
+}
+
+/// Find the worktree path for an issue by scanning `.worktrees/`.
+///
+/// Returns the first directory whose name starts with `{issue}-`.
+pub fn find_worktree_for_issue(issue: u32) -> Option<PathBuf> {
+    let worktrees_dir = repo_root().join(".worktrees");
+    let prefix = format!("{issue}-");
+
+    std::fs::read_dir(&worktrees_dir)
+        .ok()?
+        .filter_map(|entry| entry.ok())
+        .find(|entry| {
+            entry
+                .file_name()
+                .to_string_lossy()
+                .starts_with(&prefix)
+        })
+        .map(|entry| entry.path())
+}
+
+/// Find all local branches matching `*/{issue}-*`.
+pub fn find_branches_for_issue(issue: u32) -> Vec<String> {
+    let root = repo_root();
+    let pattern = format!("*/{issue}-*");
+    run_command(
+        "git",
+        &["-C", &root.to_string_lossy(), "branch", "--list", &pattern],
+    )
+    .map(|out| {
+        out.lines()
+            .map(|l| l.trim().to_string())
+            .filter(|l| !l.is_empty())
+            .collect()
+    })
+    .unwrap_or_default()
 }
 
 /// Generate the PLAN.md path for an issue.
@@ -153,14 +189,15 @@ mod tests {
 
     #[test]
     fn test_branch_name() {
-        assert_eq!(branch_name(1), "feat/issue-1");
-        assert_eq!(branch_name(42), "feat/issue-42");
+        assert_eq!(branch_name("feat", 1, "add-login"), "feat/1-add-login");
+        assert_eq!(branch_name("fix", 42, "fix-null-pointer"), "fix/42-fix-null-pointer");
+        assert_eq!(branch_name("chore", 7, "update-ci"), "chore/7-update-ci");
     }
 
     #[test]
     fn test_worktree_path_ends_correctly() {
-        let path = worktree_path(3);
-        assert!(path.ends_with(".worktrees/issue-3"));
+        let path = worktree_path(3, "add-library");
+        assert!(path.ends_with(".worktrees/3-add-library"));
     }
 
     #[test]

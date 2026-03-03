@@ -1,17 +1,14 @@
 use anyhow::{Context, Result};
 
-use crate::helpers::{branch_name, info, run_command_in, worktree_path};
+use crate::helpers::{find_worktree_for_issue, info, run_command_in};
 
 /// Push branch and create a pull request.
 pub fn create(issue: u32) -> Result<()> {
-    let branch = branch_name(issue);
-    let wt_path = worktree_path(issue);
+    let work_dir = find_worktree_for_issue(issue)
+        .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| ".".into()));
 
-    let work_dir = if wt_path.exists() {
-        wt_path
-    } else {
-        std::env::current_dir().context("Failed to get current directory")?
-    };
+    let branch = run_command_in("git", &["rev-parse", "--abbrev-ref", "HEAD"], Some(&work_dir))
+        .context("Failed to get current branch")?;
 
     // Push
     info("Pushing branch...");

@@ -3,8 +3,8 @@ use std::fs;
 use anyhow::{Context, Result};
 
 use crate::helpers::{
-    branch_name, info, repo_root, run_command, run_command_in, run_command_inherit, supabase_ports,
-    supabase_project_id, warn, worktree_path,
+    branch_name, find_branches_for_issue, find_worktree_for_issue, info, repo_root, run_command,
+    run_command_in, run_command_inherit, supabase_ports, supabase_project_id, warn, worktree_path,
 };
 
 /// Create a worktree for the given issue (idempotent).
@@ -12,9 +12,9 @@ use crate::helpers::{
 /// If the worktree already exists, prints its path and returns.
 /// Otherwise, creates the branch and worktree, installs dependencies,
 /// and copies `.env` if present.
-pub fn ensure(issue: u32) -> Result<()> {
-    let branch = branch_name(issue);
-    let wt_path = worktree_path(issue);
+pub fn ensure(prefix: &str, issue: u32, summary: &str) -> Result<()> {
+    let branch = branch_name(prefix, issue, summary);
+    let wt_path = worktree_path(issue, summary);
     let root = repo_root();
 
     // Already exists?
@@ -162,11 +162,10 @@ pub fn ensure(issue: u32) -> Result<()> {
 
 /// Remove a worktree and clean up its branch.
 pub fn remove(issue: u32) -> Result<()> {
-    let branch = branch_name(issue);
-    let wt_path = worktree_path(issue);
     let root = repo_root();
+    let wt_path = find_worktree_for_issue(issue);
 
-    if wt_path.exists() {
+    if let Some(ref wt_path) = wt_path {
         // Stop Supabase if config exists
         let config_path = wt_path.join("packages/platform/supabase/config.toml");
         if config_path.exists() {
@@ -174,7 +173,7 @@ pub fn remove(issue: u32) -> Result<()> {
             if let Err(e) = run_command_in(
                 "supabase",
                 &["--workdir", "packages/platform/supabase", "stop"],
-                Some(&wt_path),
+                Some(wt_path),
             ) {
                 warn(&format!("Failed to stop Supabase: {e}"));
             }
@@ -191,15 +190,11 @@ pub fn remove(issue: u32) -> Result<()> {
         ])
         .context("Failed to remove worktree")?;
     } else {
-        info(&format!("Worktree does not exist: {}", wt_path.display()));
+        info(&format!("No worktree found for issue {issue}"));
     }
 
-    // Delete local branch if merged
-    let branch_exists = run_command("git", &["-C", &root.to_string_lossy(), "branch", "--list", &branch])
-        .map(|out| !out.is_empty())
-        .unwrap_or(false);
-
-    if branch_exists {
+    // Delete all local branches matching */{issue}-*
+    for branch in find_branches_for_issue(issue) {
         info(&format!("Deleting branch: {branch}"));
         if run_command("git", &["-C", &root.to_string_lossy(), "branch", "-d", &branch]).is_err() {
             warn(&format!(

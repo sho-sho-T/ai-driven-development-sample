@@ -22,7 +22,7 @@ fn main() {
 fn run(cli: Cli) -> Result<()> {
     match cli.command {
         Commands::Wt { action } => match action {
-            WtAction::Ensure { issue } => commands::wt::ensure(issue),
+            WtAction::Ensure { prefix, issue, summary } => commands::wt::ensure(&prefix, issue, &summary),
             WtAction::Remove { issue } => commands::wt::remove(issue),
         },
         Commands::Issue { action } => match action {
