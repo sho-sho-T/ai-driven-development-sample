@@ -15,3 +15,13 @@ export const books = pgTable("books", {
 	publishedYear: integer("published_year"),
 	status: text("status").default("available"),
 });
+
+/** libraries テーブル */
+export const libraries = pgTable("libraries", {
+	id: text("id").primaryKey(),
+	name: text("name").notNull(),
+	email: text("email").notNull(),
+	authenticationStatus: text("authentication_status")
+		.notNull()
+		.default("unauthenticated"),
+});

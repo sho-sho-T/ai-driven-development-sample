@@ -55,3 +55,52 @@
 	border-radius: 8px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
+.status-badge {
+	display: inline-block;
+	padding: 0.2rem 0.6rem;
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+
+.status-authenticated {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.status-unauthenticated {
+	background: #f1f5f9;
+	color: #475569;
+}
+
+.verify-button {
+	padding: 0.3rem 0.75rem;
+	font-size: 0.8rem;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: white;
+	color: #334155;
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.verify-button:hover {
+	background: #f1f5f9;
+}
+
+.register-link {
+	display: inline-block;
+	padding: 0.5rem 1rem;
+	background: #3b82f6;
+	color: white;
+	border-radius: 6px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: background 0.15s;
+}
+
+.register-link:hover {
+	background: #2563eb;
+}

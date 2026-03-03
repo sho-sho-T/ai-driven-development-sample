@@ -14,6 +14,7 @@
 		"@contracts/library-public": "workspace:*",
 		"@contracts/library-server": "workspace:*",
 		"@modules/library-infra-db": "workspace:*",
+		"@platform/db": "workspace:*",
 		"@modules/library-read": "workspace:*",
 		"@modules/library-write": "workspace:*",
 		"@shared-kernel/server": "workspace:*",

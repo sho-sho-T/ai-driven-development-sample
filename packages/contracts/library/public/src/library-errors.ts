@@ -23,3 +23,11 @@ export const LibraryNotFoundError = defineError<{ id: string }>({
 	description: "指定された図書館が見つかりません",
 	meta: { exposure: "EXPECTED" },
 });
+
+/** 図書館がすでに認証済みのエラー */
+export const LibraryAlreadyVerifiedError = defineError<{ id: string }>({
+	code: "LIBRARY_ALREADY_VERIFIED",
+	name: "LibraryAlreadyVerifiedError",
+	description: "この図書館はすでにメール認証済みです",
+	meta: { exposure: "EXPECTED" },
+});

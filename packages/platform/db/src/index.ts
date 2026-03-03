@@ -5,4 +5,4 @@
  * アプリケーション全体で共有するデータベースアクセス層。
  */
 export { getDb } from "./client.ts";
-export { books } from "./schema.ts";
+export { books, libraries } from "./schema.ts";

@@ -1,9 +1,3 @@
-/**
- * In-memory LibraryRepository 実装。
- *
- * Map ベースのシンプルな永続化。開発・テスト用途。
- */
-
 import type { Library, LibraryRepository } from "@modules/library-write";
 import { okAsync } from "neverthrow";
 import { libraryStore } from "./store.ts";
@@ -16,5 +10,10 @@ export class InMemoryLibraryRepository implements LibraryRepository {
 
 	findAll() {
 		return okAsync(Array.from(libraryStore.values()) as ReadonlyArray<Library>);
+	}
+
+	findById(id: string) {
+		const library = libraryStore.get(id);
+		return okAsync(library ? ({ ...library } as Library) : null);
 	}
 }

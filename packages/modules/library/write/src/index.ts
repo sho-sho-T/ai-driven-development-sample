@@ -8,7 +8,7 @@
 // Models
 export { LibrarySchema } from "./models/library.ts";
 export type { Library } from "./models/library.ts";
-export { createLibrary } from "./models/library-behaviors.ts";
+export { createLibrary, verifyEmail } from "./models/library-behaviors.ts";
 
 // Repository interface (port)
 export type { LibraryRepository } from "./models/library-repository.ts";

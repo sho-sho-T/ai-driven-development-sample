@@ -11,6 +11,10 @@ export {
 	type RegisterLibraryInput,
 	type RegisterLibraryCommand,
 	type RegisterLibraryResult,
+	VerifyLibraryEmailInputSchema,
+	type VerifyLibraryEmailInput,
+	type VerifyLibraryEmailCommand,
+	type VerifyLibraryEmailResult,
 	type LibraryCommandResultMap,
 	type LibraryCommands,
 	type LibraryCommandType,
@@ -31,4 +35,5 @@ export {
 export {
 	LibraryValidationError,
 	LibraryNotFoundError,
+	LibraryAlreadyVerifiedError,
 } from "./library-errors.ts";

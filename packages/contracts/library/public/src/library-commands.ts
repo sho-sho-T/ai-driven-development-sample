@@ -1,11 +1,3 @@
-/**
- * library コンテキストのコマンド定義。
- *
- * - RegisterLibraryCommand: 図書館新規登録コマンド
- * - RegisterLibraryInputSchema: 入力バリデーション用 Zod スキーマ
- * - LibraryCommandResultMap: コマンド型 → 成功/エラー型のマッピング
- */
-
 import type { DependencyError, LibraryId } from "@shared-kernel/public";
 import { z } from "zod";
 
@@ -14,13 +6,13 @@ import { z } from "zod";
  */
 export const RegisterLibraryInputSchema = z.object({
 	name: z.string().min(1, "Name must not be empty"),
-	location: z.string(),
+	email: z.string().email("Email must be valid"),
 });
 
 export type RegisterLibraryInput = z.infer<typeof RegisterLibraryInputSchema>;
 
 // ===========================
-// Admin Commnands
+// Admin Commands
 // ===========================
 
 /**
@@ -40,15 +32,43 @@ export type RegisterLibraryResult = {
 };
 
 /**
+ * メール認証コマンドの入力スキーマ
+ */
+export const VerifyLibraryEmailInputSchema = z.object({
+	libraryId: z.string().min(1),
+});
+
+export type VerifyLibraryEmailInput = z.infer<
+	typeof VerifyLibraryEmailInputSchema
+>;
+
+/**
+ * メール認証コマンド
+ */
+export const VerifyLibraryEmailCommandSchema = z.object({
+	type: z.literal("library.verifyEmail"),
+	input: VerifyLibraryEmailInputSchema,
+});
+
+export type VerifyLibraryEmailCommand = z.infer<
+	typeof VerifyLibraryEmailCommandSchema
+>;
+
+export type VerifyLibraryEmailResult = void;
+
+/**
  * コマンド型 → 結果型のマッピング。
  * Bus の型安全な execute に使用する。
  */
 export type LibraryCommandResultMap = {
 	"library.registerLibrary": [RegisterLibraryResult, DependencyError];
+	"library.verifyEmail": [VerifyLibraryEmailResult, DependencyError];
 };
 
 /** 全 library コマンドの discriminated union */
-export type LibraryCommands = RegisterLibraryCommand;
+export type LibraryCommands =
+	| RegisterLibraryCommand
+	| VerifyLibraryEmailCommand;
 
 /** 全 library コマンドの type 文字列 union */
 export type LibraryCommandType = LibraryCommands["type"];

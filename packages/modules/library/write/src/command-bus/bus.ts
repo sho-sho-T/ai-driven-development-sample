@@ -1,14 +1,11 @@
-/**
- * Library CommandBus ファクトリー。
- *
- * LibraryCommandBusBuilder を使って全ハンドラーを登録し、
- * 型安全な LibraryCommandBus を返す。
- */
 import type { LibraryCommandBus } from "@contracts/library-server";
 import type { Container, Middleware } from "@shared-kernel/server";
 import type { LibraryRepository } from "../models/library-repository.ts";
 import { LibraryCommandBusBuilder } from "./builder.ts";
-import { registerLibraryHandler } from "./handlers/index.ts";
+import {
+	registerLibraryHandler,
+	verifyEmailHandler,
+} from "./handlers/index.ts";
 
 /** ハンドラーが必要とする依存の和集合 */
 type Deps = {
@@ -39,6 +36,13 @@ export function buildLibraryCommandBus(
 					repository: allDeps.repository,
 				}),
 			settings: registerLibraryHandler.settings,
+		})
+		.register("library.verifyEmail", {
+			handlerFactory: (allDeps) =>
+				verifyEmailHandler.factory({
+					repository: allDeps.repository,
+				}),
+			settings: verifyEmailHandler.settings,
 		})
 		.build({
 			resolveDeps: deps.resolveDeps,

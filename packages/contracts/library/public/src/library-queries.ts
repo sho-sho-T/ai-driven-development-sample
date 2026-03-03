@@ -1,10 +1,3 @@
-/**
- * library コンテキストのクエリ定義と DTO。
- *
- * - ListLibrariesQuery: 図書館一覧取得クエリ
- * - LibraryQueryResultMap: クエリ型 → 成功/エラー型のマッピング
- * - LibraryDto / LibraryListDto: クエリ結果の DTO
- */
 import { type DependencyError, LibraryIdSchema } from "@shared-kernel/public";
 import { z } from "zod";
 
@@ -12,7 +5,8 @@ import { z } from "zod";
 export const LibraryDtoSchema = z.object({
 	id: LibraryIdSchema,
 	name: z.string(),
-	location: z.string(),
+	email: z.string(),
+	authenticationStatus: z.string(),
 });
 
 export type LibraryDto = z.infer<typeof LibraryDtoSchema>;

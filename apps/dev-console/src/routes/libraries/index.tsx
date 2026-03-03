@@ -1,7 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { LibraryTable } from "../../features/libraries/components/library-table.tsx";
 import { libraryListQueryOptions } from "../../features/libraries/hooks/use-library-queries.ts";
+import { useVerifyLibraryEmail } from "../../features/libraries/hooks/use-verify-library-email.ts";
 
 export const Route = createFileRoute("/libraries/")({
 	component: LibrariesIndexPage,
@@ -11,5 +12,24 @@ export const Route = createFileRoute("/libraries/")({
 
 function LibrariesIndexPage() {
 	const { data } = useSuspenseQuery(libraryListQueryOptions());
-	return <LibraryTable data={data} />;
+	const verifyMutation = useVerifyLibraryEmail();
+
+	return (
+		<div>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					marginBottom: "1rem",
+				}}
+			>
+				<div />
+				<Link to="/libraries/new" className="register-link">
+					Register New Library
+				</Link>
+			</div>
+			<LibraryTable data={data} onVerify={(id) => verifyMutation.mutate(id)} />
+		</div>
+	);
 }

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LibrariesIndexRouteImport } from './routes/libraries/index'
+import { Route as LibrariesNewRouteImport } from './routes/libraries/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const LibrariesIndexRoute = LibrariesIndexRouteImport.update({
   path: '/libraries/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LibrariesNewRoute = LibrariesNewRouteImport.update({
+  id: '/libraries/new',
+  path: '/libraries/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/libraries/new': typeof LibrariesNewRoute
   '/libraries/': typeof LibrariesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/libraries/new': typeof LibrariesNewRoute
   '/libraries': typeof LibrariesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/libraries/new': typeof LibrariesNewRoute
   '/libraries/': typeof LibrariesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/libraries/'
+  fullPaths: '/' | '/libraries/new' | '/libraries/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/libraries'
-  id: '__root__' | '/' | '/libraries/'
+  to: '/' | '/libraries/new' | '/libraries'
+  id: '__root__' | '/' | '/libraries/new' | '/libraries/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LibrariesNewRoute: typeof LibrariesNewRoute
   LibrariesIndexRoute: typeof LibrariesIndexRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibrariesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/libraries/new': {
+      id: '/libraries/new'
+      path: '/libraries/new'
+      fullPath: '/libraries/new'
+      preLoaderRoute: typeof LibrariesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LibrariesNewRoute: LibrariesNewRoute,
   LibrariesIndexRoute: LibrariesIndexRoute,
 }
 export const routeTree = rootRouteImport

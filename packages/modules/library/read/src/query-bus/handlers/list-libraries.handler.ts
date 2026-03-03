@@ -1,13 +1,3 @@
-/**
- * ListLibraries クエリハンドラー。
- *
- * 「図書館一覧取得」ユースケースを実装する。
- *
- * フロー:
- * 1. LibraryQueryService で全図書館の ReadModel を取得
- * 2. LibraryListResult に変換して返却
- */
-
 import type { LibraryQueryHandlerDefinition } from "@contracts/library-server";
 import type { LibraryId } from "@shared-kernel/public";
 import type { LibraryQueryService } from "../../models/library-query-service.ts";
@@ -25,7 +15,8 @@ export const listLibrariesHandler: LibraryQueryHandlerDefinition<
 			libraries: libraries.map((library) => ({
 				id: library.id as LibraryId,
 				name: library.name,
-				location: library.location,
+				email: library.email,
+				authenticationStatus: library.authenticationStatus,
 			})),
 			total: libraries.length,
 		}));

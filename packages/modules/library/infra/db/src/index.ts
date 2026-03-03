@@ -1,12 +1,3 @@
-/**
- * @modules/library-infra-db
- *
- * library コンテキストのインフラ実装。
- * In-memory による LibraryRepository / LibraryQueryService の実装を提供する。
- *
- * registerLibraryInfra: DI コンテナにインフラ実装を登録する関数。
- * Composition Root から呼び出す。
- */
 import type { Container } from "@shared-kernel/server";
 import {
 	LibraryRepositoryToken,
@@ -19,12 +10,9 @@ export { InMemoryLibraryRepository } from "./in-memory-library-repository.ts";
 export { InMemoryLibraryQueryService } from "./in-memory-library-query-service.ts";
 
 /**
- * library インフラ実装を DI コンテナに登録する。
- *
- * - LibraryRepository: In-memory 実装を登録
- * - LibraryQueryService: In-memory 実装を登録
+ * library インフラ実装（In-memory）を DI コンテナに登録する。テスト・開発用。
  */
-export function registerLibraryInfra(container: Container): void {
+export function registerLibraryInfraInMemory(container: Container): void {
 	container.register(LibraryRepositoryToken, new InMemoryLibraryRepository());
 	container.register(
 		LibraryQueryServiceToken,

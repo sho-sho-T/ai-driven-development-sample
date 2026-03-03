@@ -4,7 +4,8 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./drizzle": "./src/drizzle.ts"
 	},
 	"dependencies": {
 		"@shared-kernel/public": "workspace:*",
@@ -12,6 +13,9 @@
 		"@contracts/library-public": "workspace:*",
 		"@contracts/library-server": "workspace:*",
 		"@modules/library-write": "workspace:*",
-		"@modules/library-read": "workspace:*"
+		"@modules/library-read": "workspace:*",
+		"@platform/db": "workspace:*",
+		"drizzle-orm": "^0.40.1",
+		"neverthrow": "^8.2.0"
 	}
 }
