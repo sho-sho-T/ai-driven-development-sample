@@ -40,25 +40,25 @@ run = "bun run format"
 
 [tasks.db]
 description = "Start Supabase services"
-run = "supabase --workdir packages/platform/supabase start"
+run = "supabase --workdir packages/platform start"
 
 [tasks."db:stop"]
 description = "Stop Supabase services"
-run = "supabase --workdir packages/platform/supabase stop"
+run = "supabase --workdir packages/platform stop"
 
 [tasks."db:reset"]
 description = "Reset database (re-apply migrations)"
-run = "supabase --workdir packages/platform/supabase db reset"
+run = "supabase --workdir packages/platform db reset"
 
 [tasks."db:push"]
 description = "Push migrations to Supabase Cloud"
-run = "supabase --workdir packages/platform/supabase db push"
+run = "supabase --workdir packages/platform db push"
 
 [tasks."deploy:prod"]
 description = "Deploy Supabase migrations and TanStack Start app to Cloudflare Workers"
 run = """
 echo "[1/3] Pushing database migrations to Supabase Cloud..."
-supabase --workdir packages/platform/supabase db push
+supabase --workdir packages/platform db push
 echo "[2/3] Building TanStack Start app..."
 cd apps/web && bun run build
 echo "[3/3] Deploying to Cloudflare Workers..."
